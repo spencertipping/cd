@@ -28,3 +28,28 @@ To enable it (this can also be done from `.bashrc`):
 
 Some of `cd`'s extensions store state and/or create temporary mountpoints in
 `~/.cd`, which it automatically creates.
+
+## Experimental extensions
+
+Unfinished, but potentially useful anyway.
+
+### HTTP
+
+You can enable this with `. cd-http`.
+
+    $ cd spencertipping.com     # creates a virtual HTTP client directory
+    $ get /                     # GETs /
+    $ cd spencertipping.com/posts/
+    $ get 2012.0207.occams-razor.html
+    ...
+    $ ls                        # HTTP verbs
+    delete                      # TODO
+    get
+    head                        # TODO
+    post                        # TODO
+    put                         # TODO
+    options                     # TODO
+    $
+
+Virtual HTTP directories are managed just like fuse-mounted ones: they should,
+but don't yet, get cleaned up automatically when you `cd` out of them.

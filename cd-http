@@ -1,0 +1,25 @@
+#!/bin/bash
+# Virtual HTTP directories | Spencer Tipping
+# Licensed under the terms of the MIT source code license
+
+if which curl > /dev/null; then
+  cd_on '^(https?://)?[^/]+\.(com|net|org|io|ly).*' \
+    cd_http_mount cd_http_umount
+fi
+
+function cd_http_mount {
+  cd_mount cd_init_http "$@"
+}
+
+function cd_http_umount {
+  cd_umount "rm -r" "$@"
+}
+
+function cd_init_http {
+  local http_base=$1
+  local dir=$2
+
+  echo '#!/bin/bash' >> "$dir/get"
+  echo "exec curl '$http_base'"'"$1"' >> "$dir/get"
+  chmod +x "$dir/get"
+}
