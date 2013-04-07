@@ -13,7 +13,7 @@ real directories to special commands; so if you had a directory called `foo:`,
     $ cd ^                      # history: go back one directory
     $ cd ^^                     # history: go back two directories
     $ cd ^10                    # history: go back ten directories
-    $ cd ^foo                   # history: go back to last dir containing 'foo'
+    $ cd ^foo                   # history: go back to last dir matching /foo/
 
 Fuse-mounted directories are unmounted automatically when you `cd` out of them.
 
