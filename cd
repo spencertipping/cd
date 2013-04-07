@@ -49,8 +49,11 @@ function cd_index_for {
 function cd_goto {
   # Navigates to a directory, taking care of all cd_unfn hooks. The assumption
   # is that the resulting $PWD will trigger the correct cd_pattern.
-  local this=$1
+  local last=$PWD
   local last_index=$(cd_index_for "$PWD")
+
+  builtin cd "$1" || return $?
+  local this=$PWD
 
   if [[ $last_index != -1 ]]; then
     local this_index=$(cd_index_for "$this")
@@ -61,16 +64,15 @@ function cd_goto {
       # changing out of a temp dir and into another temp dir, or some such. But
       # we pass the --same flag to indicate to the unfn that it's the same type
       # of directory.
-      ${unfn:-:} --same "$PWD" "$this" || return $?
+      ${unfn:-:} --same "$last" "$this" || return $?
     else
       # Just invoke the unfn, informing it that we are changing into a different
       # type of directory.
-      ${unfn:-:} --different "$PWD" || return $?
+      ${unfn:-:} --different "$last" || return $?
     fi
   fi
 
-  builtin cd "$this" || return $?
-  cd_push_history "$PWD"
+  cd_push_history "$this"
 }
 
 function cd {
@@ -126,7 +128,6 @@ function cd_umount {
 
   if [[ ($1 == --different && -d $pwd_mount) ||
         ($1 == --same      &&    $pwd_mount != $new_mount) ]]; then
-    builtin cd          # cd away from mounted directory
     $umount_command "$pwd_mount" && rmdir "$pwd_mount"
   fi
 }
