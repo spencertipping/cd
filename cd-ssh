@@ -1,0 +1,15 @@
+#!/bin/bash
+# Auto SSHFS mounting | Spencer Tipping
+# Licensed under the terms of the MIT source code license
+
+if which sshfs > /dev/null; then
+  cd_on '^([^:]+):.*' cd_sshfs_mount cd_sshfs_umount
+fi
+
+function cd_sshfs_mount {
+  cd_mount sshfs "$@"
+}
+
+function cd_sshfs_umount {
+  cd_umount "fusermount -u" "$@"
+}

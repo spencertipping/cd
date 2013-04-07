@@ -1,0 +1,16 @@
+#!/bin/bash
+# Auto archive mounting | Spencer Tipping
+# Licensed under the terms of the MIT source code license
+
+if which archivemount > /dev/null; then
+  cd_on '\.(tar(|\.(gz|bz2|Z|z|xz|lzma))|tgz|tbz2|rar|zip|ZIP)$' \
+    cd_archive_mount cd_archive_umount
+fi
+
+function cd_archive_mount {
+  cd_mount archivemount "$@"
+}
+
+function cd_archive_umount {
+  cd_umount "fusermount -u" "$@"
+}

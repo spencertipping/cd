@@ -1,0 +1,148 @@
+#!/bin/bash
+# Customizable cd | Spencer Tipping
+# Licensed under the terms of the MIT source code license
+
+declare -a cd_patterns
+declare -a cd_fns               # functions to activate directories
+declare -a cd_unfns             # functions to deactivate directories
+
+declare -a cd_history
+declare -a cd_index_history
+
+function cd_on {
+  # Usage: cd_on pattern fn [unfn]. This is how you add new handlers for cd.
+  # For example:
+  #
+  # $ function echo_fn { echo "$@"; cd_goto "$@"; }
+  # $ function echo_unfn { echo unfn "$@"; }
+  # $ cd_on "foo" echo_fn echo_unfn
+  # $ cd foo
+  # foo
+  # $ cd
+  # unfn --different foo        # see cd_goto for explanation here
+  # $
+
+  cd_patterns[${#cd_patterns[@]}]=$1
+  cd_fns[${#cd_fns[@]}]=${2:-:}
+  cd_unfns[${#cd_unfns[@]}]=${3:-:}
+  :
+}
+
+function cd_push_history {
+  cd_history[${#cd_history[@]}]=$1
+  cd_index_history[${#cd_index_history[@]}]=$(cd_index_for "$1")
+  :
+}
+
+function cd_index_for {
+  local target=$1
+  for (( i = ${#cd_patterns[@]} - 1; i >= 0; --i )); do
+    if [[ "$target" =~ ${cd_patterns[$i]} ]]; then
+      echo $i
+      return 0
+    fi
+  done
+  echo -1
+  return 1
+}
+
+function cd_goto {
+  # Navigates to a directory, taking care of all cd_unfn hooks. The assumption
+  # is that the resulting $PWD will trigger the correct cd_pattern.
+  local this=$1
+  local last_index=$(cd_index_for "$PWD")
+
+  if [[ $last_index != -1 ]]; then
+    local this_index=$(cd_index_for "$this")
+    local unfn=${cd_unfns[$last_index]}
+
+    if ((last_index == this_index)); then
+      # We still need to let the unfn know that a cd happened, since we may be
+      # changing out of a temp dir and into another temp dir, or some such. But
+      # we pass the --same flag to indicate to the unfn that it's the same type
+      # of directory.
+      ${unfn:-:} --same "$PWD" "$this" || return $?
+    else
+      # Just invoke the unfn, informing it that we are changing into a different
+      # type of directory.
+      ${unfn:-:} --different "$PWD" || return $?
+    fi
+  fi
+
+  builtin cd "$this" || return $?
+  cd_push_history "$PWD"
+}
+
+function cd {
+  local target=${1:-$HOME}
+
+  # Always prefer real directories
+  if [[ -d "$target" ]]; then
+    cd_goto "$target"
+    return $?
+  fi
+
+  # Otherwise, identify the pattern and invoke the corresponding fn. This fn
+  # should invoke cd_goto to do the directory change, which will in turn invoke
+  # the proper unfns.
+  local index=$(cd_index_for "$target")
+  if (( index == -1 )); then
+    echo "cd: $target does not exist and matches no cd-pattern"
+    return 1
+  else
+    shift
+    local fn=${cd_fns[$index]}
+    ${fn:-:} "$target" "$@"
+  fi
+}
+
+# Mountpoint allocation
+function cd_mount {
+  local mount_command=$1
+  shift
+
+  local target=$1
+  local markername=${target//\//-}
+  local dirname=~/.cd/mountpoints/$markername
+
+  if [[ ! -e "$dirname" ]]; then
+    mkdir -p "$dirname"
+    $mount_command "$target" "$dirname"
+  fi
+  cd_goto "$dirname"
+}
+
+function cd_umount {
+  local umount_command=$1
+  shift
+
+  if [[ $2 =~ ^($HOME/.cd/mountpoints/[^/]+) ]]; then
+    local pwd_mount=${BASH_REMATCH[1]}
+  fi
+
+  if [[ $3 =~ ^($HOME/.cd/mountpoints/[^/]+) ]]; then
+    local new_mount=${BASH_REMATCH[1]}
+  fi
+
+  if [[ ($1 == --different && -d $pwd_mount) ||
+        ($1 == --same      &&    $pwd_mount != $new_mount) ]]; then
+    builtin cd          # cd away from mounted directory
+    $umount_command "$pwd_mount" && rmdir "$pwd_mount"
+  fi
+}
+
+# cd state inspection
+function cd_list_history {
+  for ((i = 0; i < ${#cd_history[@]}; ++i)); do
+    echo "${cd_history[$i]}"
+  done
+}
+
+function cd_list_patterns {
+  for ((i = 0; i < ${#cd_patterns[@]}; ++i)); do
+    echo "${cd_patterns[$i]} ${cd_fns[$i]} ${cd_unfns[$i]}"
+  done
+}
+
+cd_on '^--patterns$' cd_list_patterns
+cd_on '^--history$'  cd_list_history
