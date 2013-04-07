@@ -35,6 +35,10 @@ Unfinished, but potentially useful anyway.
 
 ### HTTP
 
+This is less useful than you might think due to the number of sites that
+disallow `curl`. However, I could imagine it being helpful if you're testing
+REST APIs or some such.
+
 You can enable this with `. cd-http`.
 
     $ cd spencertipping.com     # creates a virtual HTTP client directory
@@ -51,5 +55,5 @@ You can enable this with `. cd-http`.
     options                     # TODO
     $
 
-Virtual HTTP directories are managed just like fuse-mounted ones: they should,
-but don't yet, get cleaned up automatically when you `cd` out of them.
+Virtual HTTP directories are managed just like fuse-mounted ones: they should
+(but don't yet, TODO) get cleaned up automatically when you `cd` out of them.

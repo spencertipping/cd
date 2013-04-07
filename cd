@@ -128,7 +128,8 @@ function cd_umount {
 
   if [[ ($1 == --different && -d $pwd_mount) ||
         ($1 == --same      &&    $pwd_mount != $new_mount) ]]; then
-    $umount_command "$pwd_mount" && rmdir "$pwd_mount"
+    $umount_command "$pwd_mount"
+    rmdir "$pwd_mount"
   fi
 }
 
