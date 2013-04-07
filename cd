@@ -147,3 +147,5 @@ function cd_list_patterns {
 
 cd_on '^--patterns$' cd_list_patterns
 cd_on '^--history$'  cd_list_history
+
+cd_push_history "$PWD"

@@ -7,11 +7,12 @@ cd_on '^\^\d+$' cd_history_back_n
 cd_on '^\^+$'   cd_history_back
 
 function cd_history_back {
-  cd_goto "${cd_history[-${#1}]}"
+  local n=$((1 + ${#1}))
+  cd_goto "${cd_history[-$n]}"
 }
 
 function cd_history_back_n {
-  local n=${1#^}
+  local n=$((1 + ${1#^}))
   cd_goto "${cd_history[-$n]}"
 }
 
