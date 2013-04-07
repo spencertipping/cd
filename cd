@@ -9,6 +9,9 @@ declare -a cd_unfns             # functions to deactivate directories
 declare -a cd_history
 declare -a cd_index_history
 
+# This will trigger any auto-unmounting that needs to happen.
+trap 'cd $HOME' EXIT TERM QUIT
+
 function cd_on {
   # Usage: cd_on pattern fn [unfn]. This is how you add new handlers for cd.
   # For example:
