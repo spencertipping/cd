@@ -7,7 +7,7 @@ if which sshfs > /dev/null; then
 fi
 
 function cd_sshfs_mount {
-  cd_mount sshfs "$@"
+  cd_mount "sshfs -o follow_symlinks" "$@"
 }
 
 function cd_sshfs_umount {
