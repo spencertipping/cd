@@ -81,6 +81,10 @@ function cd_goto {
 function cd {
   local target=${1:-$HOME}
 
+  if [[ "$target" == '-' ]]; then
+    target=$OLDPWD
+  fi
+
   # Always prefer real directories
   if [[ -d "$target" ]]; then
     cd_goto "$target"
