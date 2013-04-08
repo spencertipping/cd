@@ -8,7 +8,9 @@ if which archivemount > /dev/null; then
 fi
 
 function cd_archive_mount {
-  cd_mount archivemount "$@"
+  # readonly disables auto-backup creation, and handles my most common use
+  # case. However, there is no other reason I've set it here.
+  cd_mount "archivemount -o readonly" "$@"
 }
 
 function cd_archive_umount {
