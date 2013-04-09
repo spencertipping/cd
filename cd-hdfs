@@ -10,12 +10,13 @@ function cd_hdfs_mount {
   local target=$1
   local mountpoint=$2
 
-  if [[ "$target" =~ h?dfs:[-/][-/]([^:/]+):([0-9]+)$ ]]; then
+  if [[ "$target" =~ h?dfs:[-/][-/]([^:/]+):([0-9]+)(.*) ]]; then
     local namenode=${BASH_REMATCH[1]}
     local port=${BASH_REMATCH[2]}
+    local after_cd=${BASH_REMATCH[3]}
 
-    echo "connecting to dfs://$namenode:$port"
     cd_mount "hadoop-fuse-dfs -oprivate" "dfs://$namenode:$port" "$mountpoint"
+    cd_goto "${after_cd#/}"
   else
     echo "called cd_hdfs_mount on a non-matching target: $target"
     echo "(probably a cd-hdfs bug)"
