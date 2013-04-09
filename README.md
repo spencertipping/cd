@@ -30,6 +30,10 @@ To enable it (this can also be done from `.bashrc`):
     $ . cd-hdfs                 # does nothing unless you have hadoop-fuse-dfs
     $ . cd-dev
 
+You can see the patterns that are handled by running `cd --patterns`. (This can
+be useful if you want to find out which ones are ignored due to unmet
+dependencies.)
+
 **Be sure to initialize this script after RVM.** RVM redefines `cd`, clobbering
 any existing redefinitions. This script, on the other hand, preserves RVM's
 `cd` redefinition while adding behavior of its own.
