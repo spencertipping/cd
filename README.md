@@ -17,14 +17,20 @@ real directories to special commands; so if you had a directory called `foo:`,
 
 Fuse-mounted directories are unmounted automatically when you `cd` out of them.
 
+## Setup
+
 To enable it (this can also be done from `.bashrc`):
 
     $ . cd                      # enables extensible cd
     $ . cd-traverse             # enables descendant/ancestor traversal
     $ . cd-history              # ^, ^^, ^n, ^regexp
-    $ . cd-ssh
-    $ . cd-archive
+    $ . cd-ssh                  # does nothing unless you have sshfs
+    $ . cd-archive              # does nothing unless you have archivemount
     $ . cd-dev
+
+**Be sure to initialize this script after RVM.** RVM redefines `cd`, clobbering
+any existing redefinitions. This script, on the other hand, preserves RVM's
+`cd` redefinition while adding behavior of its own.
 
 Some of `cd`'s extensions store state and/or create temporary mountpoints in
 `~/.cd`, which it automatically creates.
@@ -33,27 +39,21 @@ Some of `cd`'s extensions store state and/or create temporary mountpoints in
 
 Unfinished, but potentially useful anyway.
 
-### HTTP
+### Git (via gitfuse)
 
-This is less useful than you might think due to the number of sites that
-disallow `curl`. However, I could imagine it being helpful if you're testing
-REST APIs or some such.
+    $ . cd-git                  # does nothing unless you have gitfuse
 
-You can enable this with `. cd-http`.
+If you have [gitfuse](https://github.com/davesque/gitfuse) somewhere in your
+`$PATH`, you can `cd` into `/some/path.git` to get access to all files in all
+revisions.
 
-    $ cd spencertipping.com     # creates a virtual HTTP client directory
-    $ get /                     # GETs /
-    $ cd spencertipping.com/posts/
-    $ get 2012.0207.occams-razor.html
-    ...
-    $ ls                        # HTTP verbs
-    delete                      # TODO
-    get
-    head                        # TODO
-    post                        # TODO
-    put                         # TODO
-    options                     # TODO
-    $
+The simplest way I've found to install Gitfuse on Ubuntu 12.10 is:
 
-Virtual HTTP directories are managed just like fuse-mounted ones: they should
-(but don't yet, TODO) get cleaned up automatically when you `cd` out of them.
+    # apt-add-repository ppa:xav0989/libgit2
+    # apt-add-repository ppa:dennis/python
+    # apt-get install libgit2 libgit2-dev python-pygit2 python-setuptools python-dev
+    $ git clone git://github.com/davesque/gitfuse && cd gitfuse
+    $ sed -i '/pygit2/ d' setup.py
+    # python setup.py install
+
+As of this revision, Gitfuse does not produce useful results.
