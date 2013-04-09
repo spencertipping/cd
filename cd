@@ -55,7 +55,7 @@ function cd_goto {
   local last=$PWD
   local last_index=$(cd_index_for "$PWD")
 
-  builtin cd "$1" || return $?
+  cd_original_cd "$1" || return $?
   local this=$PWD
 
   if [[ $last_index != -1 ]]; then
@@ -77,6 +77,16 @@ function cd_goto {
 
   cd_push_history "$this"
 }
+
+# Ok, we're about to redefine 'cd' and all will be good. However, scripts like
+# RVM have already customized 'cd', so if we redefine it blindly we'll nuke
+# their customizations. To get around this, we look for any custom 'cd'
+# definitions and rename them. This is a hack.
+if cd_original_source=$(declare -f cd); then
+  eval "cd_original_cd ${cd_original_source#cd }"
+else
+  function cd_original_cd { builtin cd "$@"; }
+fi
 
 function cd {
   local target=${1:-$HOME}
