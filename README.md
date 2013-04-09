@@ -10,6 +10,7 @@ real directories to special commands; so if you had a directory called `foo:`,
     $ cd **foo                  # cd's to the first 'foo' descendant dir
     $ cd ..foo                  # cd's up to the nearest 'foo'
     $ cd x.tar                  # mounts x.tar with archivemount
+    $ cd hdfs://namenode:9000   # mounts namenode with hadoop-fuse-dfs
     $ cd ^                      # history: go back one directory
     $ cd ^^                     # history: go back two directories
     $ cd ^10                    # history: go back ten directories
@@ -26,6 +27,7 @@ To enable it (this can also be done from `.bashrc`):
     $ . cd-history              # ^, ^^, ^n, ^regexp
     $ . cd-ssh                  # does nothing unless you have sshfs
     $ . cd-archive              # does nothing unless you have archivemount
+    $ . cd-hdfs                 # does nothing unless you have hadoop-fuse-dfs
     $ . cd-dev
 
 **Be sure to initialize this script after RVM.** RVM redefines `cd`, clobbering
