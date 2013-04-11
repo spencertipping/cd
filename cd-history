@@ -27,3 +27,15 @@ function cd_history_back_pattern {
   echo "cd: no history matching the regexp '$pattern'"
   return 1
 }
+
+# Recover existing history
+if [[ -e ~/.cd/history ]]; then
+  cd_old_ifs=$IFS
+  IFS=$'\n'
+  for line in $(tail -n500 ~/.cd/history | uniq); do
+    # -n is required so that we don't append these history entries to
+    # ~/.cd/history.
+    cd_push_history "$line" -n
+  done
+  IFS=$cd_old_ifs
+fi

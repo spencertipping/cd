@@ -35,6 +35,10 @@ function cd_push_history {
   if [[ ${#cd_history[@]} == 0 || "$1" != "${cd_history[-1]}" ]]; then
     cd_history[${#cd_history[@]}]=$1
     cd_index_history[${#cd_index_history[@]}]=$(cd_index_for "$1")
+
+    if [[ "$2" != '-n' ]]; then
+      echo "$1" >> ~/.cd/history
+    fi
   fi
   :
 }

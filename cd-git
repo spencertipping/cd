@@ -1,21 +1,21 @@
 #!/bin/bash
-# Auto gitfuse mounting | Spencer Tipping
+# Auto yagfs mounting | Spencer Tipping
 # Licensed under the terms of the MIT source code license
 
-if which gitfuse > /dev/null; then
-  cd_on '@git' cd_gitfuse_mount cd_gitfuse_umount
+if which yagfs > /dev/null; then
+  cd_on 'git:' cd_yagfs_mount cd_yagfs_umount
 fi
 
-function cd_gitfuse_wrapper {
+function cd_yagfs_wrapper {
   local target=$1
   local mountpoint=$2
-  (gitfuse "${target/@git/}" "$mountpoint" 2>/dev/null &)
+  (yagfs "${target#git:}" "$mountpoint" & sleep 0.25)
 }
 
-function cd_gitfuse_mount {
-  cd_mount cd_gitfuse_wrapper "$@"
+function cd_yagfs_mount {
+  cd_mount cd_yagfs_wrapper "$@"
 }
 
-function cd_gitfuse_umount {
+function cd_yagfs_umount {
   cd_umount "fusermount -u" "$@"
 }

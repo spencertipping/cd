@@ -15,6 +15,7 @@ real directories to special commands; so if you had a directory called `foo:`,
     $ cd ^^                     # history: go back two directories
     $ cd ^10                    # history: go back ten directories
     $ cd ^foo                   # history: go back to last dir matching /foo/
+    $ cd git:/path/to/repo      # mounts git commits as directories
 
 Fuse-mounted directories are unmounted automatically when you `cd` out of them.
 
@@ -28,6 +29,7 @@ To enable it (this can also be done from `.bashrc`):
     $ . cd-ssh                  # does nothing unless you have sshfs
     $ . cd-archive              # does nothing unless you have archivemount
     $ . cd-hdfs                 # does nothing unless you have hadoop-fuse-dfs
+    $ . cd-git                  # does nothing unless you have yagfs
     $ . cd-dev
 
 You can see the patterns that are handled by running `cd --patterns`. (This can
@@ -41,25 +43,7 @@ any existing redefinitions. This script, on the other hand, preserves RVM's
 Some of `cd`'s extensions store state and/or create temporary mountpoints in
 `~/.cd`, which it automatically creates.
 
-## Experimental extensions
+## YaGFS
 
-Unfinished, but potentially useful anyway.
-
-### Git (via gitfuse)
-
-    $ . cd-git                  # does nothing unless you have gitfuse
-
-If you have [gitfuse](https://github.com/davesque/gitfuse) somewhere in your
-`$PATH`, you can `cd` into `/some/path.git` to get access to all files in all
-revisions.
-
-The simplest way I've found to install Gitfuse on Ubuntu 12.10 is:
-
-    # apt-add-repository ppa:xav0989/libgit2
-    # apt-add-repository ppa:dennis/python
-    # apt-get install libgit2 libgit2-dev python-pygit2 python-setuptools python-dev
-    $ git clone git://github.com/davesque/gitfuse && cd gitfuse
-    $ sed -i '/pygit2/ d' setup.py
-    # python setup.py install
-
-As of this revision, Gitfuse does not produce useful results.
+YaGFS doesn't have an Ubuntu package, but it should be easy to install from its
+[source repository](https://github.com/spencertipping/yagfs).
