@@ -3,7 +3,7 @@
 # Licensed under the terms of the MIT source code license
 
 if which yagfs > /dev/null; then
-  cd_on '(^|\W)git:' cd_yagfs_mount cd_yagfs_umount
+  cd_on '^git:' cd_yagfs_mount cd_yagfs_umount
 fi
 
 function cd_yagfs_wrapper {
