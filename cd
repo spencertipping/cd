@@ -24,6 +24,11 @@ function cd_on {
   # $ cd
   # unfn --different foo        # see cd_goto for explanation here
   # $
+  #
+  # If you're doing anything remotely like a mount-on-demand operation, you
+  # should use the cd_mount and cd_umount functions. These handle the
+  # --same/--different option and reuse mountpoints when cd'ing within a
+  # mounted tree.
 
   cd_patterns[${#cd_patterns[@]}]=$1
   cd_fns[${#cd_fns[@]}]=${2:-:}
@@ -169,7 +174,12 @@ function cd_list_patterns {
   done
 }
 
-cd_on '^--patterns$' cd_list_patterns
-cd_on '^--history$'  cd_list_history
+function cd_list_mountpoints {
+  ls ~/.cd/mountpoints
+}
+
+cd_on '^--patterns$'       cd_list_patterns
+cd_on '^--history$'        cd_list_history
+cd_on '^--mount(point)?s$' cd_list_mountpoints
 
 cd_push_history "$PWD"

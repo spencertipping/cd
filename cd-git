@@ -3,13 +3,19 @@
 # Licensed under the terms of the MIT source code license
 
 if which yagfs > /dev/null; then
-  cd_on 'git:' cd_yagfs_mount cd_yagfs_umount
+  cd_on '(^|\W)git:' cd_yagfs_mount cd_yagfs_umount
 fi
 
 function cd_yagfs_wrapper {
   local target=$1
   local mountpoint=$2
-  (yagfs "${target#git:}" "$mountpoint" & sleep 0.25)
+
+  # The sleep here is to give yagfs a chance to warm up. Normally we don't need
+  # to worry about this because most FUSE drivers exit once they're mounted,
+  # but yagfs isn't that clever. If we don't sleep, then bash will complete the
+  # cd into the not-yet-mounted directory and you'll have to 'cd .' in order to
+  # see the mounted contents.
+  (yagfs "${target#git:}" "$mountpoint" & sleep 0.5)
 }
 
 function cd_yagfs_mount {

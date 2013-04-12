@@ -19,6 +19,12 @@ real directories to special commands; so if you had a directory called `foo:`,
 
 Fuse-mounted directories are unmounted automatically when you `cd` out of them.
 
+## Interactive options
+
+    $ cd --history              # prints $PWD history, most recent first
+    $ cd --mounts               # lists probably-active FUSE mount points
+    $ cd --patterns             # all patterns that 'cd' is looking for
+
 ## Setup
 
 To enable it (this can also be done from `.bashrc`):
@@ -30,11 +36,12 @@ To enable it (this can also be done from `.bashrc`):
     $ . cd-archive              # does nothing unless you have archivemount
     $ . cd-hdfs                 # does nothing unless you have hadoop-fuse-dfs
     $ . cd-git                  # does nothing unless you have yagfs
-    $ . cd-dev
+    $ . cd-dev                  # enables automounting for /dev/ entries
 
 You can see the patterns that are handled by running `cd --patterns`. (This can
 be useful if you want to find out which ones are ignored due to unmet
-dependencies.)
+dependencies.) Anything that isn't a pattern is treated like a regular
+directory change.
 
 **Be sure to initialize this script after RVM.** RVM redefines `cd`, clobbering
 any existing redefinitions. This script, on the other hand, preserves RVM's
