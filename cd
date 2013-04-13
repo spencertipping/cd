@@ -12,7 +12,7 @@ declare -a cd_index_history
 mkdir -p ~/.cd
 
 # This will trigger any auto-unmounting that needs to happen.
-trap 'cd $HOME' EXIT TERM QUIT
+trap "cd $HOME" EXIT TERM QUIT
 
 function cd_on {
   # Usage: cd_on pattern fn [unfn]. This is how you add new handlers for cd.
@@ -37,6 +37,17 @@ function cd_on {
   cd_unfns[${#cd_unfns[@]}]=${3:-:}
   :
 }
+
+function cd_missing_fn {
+  echo "cd: $target does not exist and matches no cd-pattern"
+  return 1
+}
+
+function cd_missing_unfn {
+  :
+}
+
+cd_on '.*' cd_missing_fn cd_missing_unfn
 
 function cd_push_history {
   if [[ ${#cd_history[@]} == 0 || "$1" != "${cd_history[-1]}" ]]; then
@@ -116,16 +127,12 @@ function cd {
 
   # Otherwise, identify the pattern and invoke the corresponding fn. This fn
   # should invoke cd_goto to do the directory change, which will in turn invoke
-  # the proper unfns.
+  # the proper unfns. We don't need to check the index because we have a
+  # catch-all pattern that already invokes cd_missing_fn and cd_missing_unfn.
   local index=$(cd_index_for "$target")
-  if (( index == -1 )); then
-    echo "cd: $target does not exist and matches no cd-pattern"
-    return 1
-  else
-    shift
-    local fn=${cd_fns[$index]}
-    ${fn:-:} "$target" "$@"
-  fi
+  local fn=${cd_fns[$index]}
+  shift
+  ${fn:-:} "$target" "$@"
 }
 
 # Mountpoint allocation

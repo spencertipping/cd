@@ -50,7 +50,44 @@ any existing redefinitions. This script, on the other hand, preserves RVM's
 Some of `cd`'s extensions store state and/or create temporary mountpoints in
 `~/.cd`, which it automatically creates.
 
+## Experimental extensions
+
+### Create missing directories
+
+    $ . cd-missing-mkdir
+
+Sourcing this script causes `cd` to create directories that don't exist. Any
+leaf directory created by `cd` will be removed upon leaving if it is empty and
+no process is using it. So, for example:
+
+    $ ls
+    foo  bar
+    $ cd BOOYAH
+    $ cd ..
+    $ ls
+    foo  bar
+    $
+
+At this point `cd` will create but not delete parent directories:
+
+    $ ls
+    foo  bar
+    $ cd bif/baz/bok
+    $ cd ../../..
+    $ ls
+    foo  bar  bif
+    $ ls bif
+    baz
+    $ ls bif/baz
+    $
+
 ## YaGFS
 
 YaGFS doesn't have an Ubuntu package, but it should be easy to install from its
-[source repository](https://github.com/spencertipping/yagfs).
+[source repository](https://github.com/spencertipping/yagfs). You'll need to
+symlink the `yagfs` script into your `$PATH` for `cd` to know to use it.
+
+## Authors
+
+- Spencer Tipping [spencertipping](https://github.com/spencertipping)
+- Vivien Didelot [vivien](https://github.com/vivien)
