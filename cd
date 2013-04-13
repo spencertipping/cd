@@ -9,6 +9,8 @@ declare -a cd_unfns             # functions to deactivate directories
 declare -a cd_history
 declare -a cd_index_history
 
+mkdir -p ~/.cd
+
 # This will trigger any auto-unmounting that needs to happen.
 trap 'cd $HOME' EXIT TERM QUIT
 
