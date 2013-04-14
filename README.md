@@ -16,6 +16,7 @@ real directories to special commands; so if you had a directory called `foo:`,
     $ cd ^10                    # history: go back ten directories
     $ cd ^foo                   # history: go back to last dir matching /foo/
     $ cd git:/path/to/repo      # mounts git commits as directories
+    $ cd enc:/path/to/encrypted # mounts an encfs directory
 
 Fuse-mounted directories are unmounted automatically when you `cd` out of them.
 
@@ -36,6 +37,7 @@ To enable it (this can also be done from `.bashrc`):
     $ . cd-archive              # does nothing unless you have archivemount
     $ . cd-hdfs                 # does nothing unless you have hadoop-fuse-dfs
     $ . cd-git                  # does nothing unless you have yagfs
+    $ . cd-encfs                # does nothing unless you have encfs
     $ . cd-dev                  # enables automounting for /dev/ entries
 
 You can see the patterns that are handled by running `cd --patterns`. (This can
