@@ -2,14 +2,15 @@
 # mkdir wrapper | Vivien Didelot and Spencer Tipping
 # Licensed under the terms of the MIT source code license
 
-# Keep a special file key in each directory we should nuke. The key has enough
-# entropy that nobody would create such a file by mistake.
-cd_autorm=.cd-autorm-$(git hash-object <(echo $RANDOM $RANDOM $RANDOM $RANDOM \
-                                              $RANDOM $RANDOM $RANDOM $RANDOM))
+# Keep a special file key in each directory we should nuke.
+cd_autorm=$(mktemp -u .cd-autorm-XXXXXXXXXXXXXXXX)
+
 function cd_missing_fn {
   local target=$1
   mkdir -p "$target"
   touch "$target/$cd_autorm"
+
+  echo 'cd: created ephemeral directory'
   cd_goto "$target"
 }
 
