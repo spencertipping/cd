@@ -106,10 +106,16 @@ function cd_goto {
 # RVM have already customized 'cd', so if we redefine it blindly we'll nuke
 # their customizations. To get around this, we look for any custom 'cd'
 # definitions and rename them. This is a hack.
-if cd_original_source=$(declare -f cd); then
-  eval "cd_original_cd ${cd_original_source#cd }"
-else
-  function cd_original_cd { builtin cd "$@"; }
+#
+# Note that if we already have an original function, then we do nothing.
+# Otherwise we'll cause an infinite loop.
+
+if ! declare -f cd_original_cd > /dev/null; then
+  if cd_original_source=$(declare -f cd); then
+    eval "cd_original_cd ${cd_original_source#cd }"
+  else
+    function cd_original_cd { builtin cd "$@"; }
+  fi
 fi
 
 function cd {
