@@ -10,7 +10,7 @@ function cd_missing_fn {
   mkdir -p "$target"
   touch "$target/$cd_autorm"
 
-  echo 'cd: created ephemeral directory'
+  echo "cd: created ephemeral directory $target"
   cd_goto "$target"
 }
 
