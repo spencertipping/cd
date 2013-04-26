@@ -20,8 +20,8 @@ function cd_missing_unfn {
   local mode=$1
   local from=$2
   local to=$3
-  if [[ -f "$from/$cd_autorm" ]]; then
+  if [[ -e "$from/$cd_autorm" ]]; then
     rm "$from/$cd_autorm"
-    lsof +D "$from" > /dev/null || rmdir --ignore-fail-on-non-empty "$from"
+    rmdir "$from" && echo "cd: removed ephemeral directory $from"
   fi
 }
