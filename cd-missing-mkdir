@@ -3,7 +3,7 @@
 # Licensed under the terms of the MIT source code license
 
 # Keep a special file key in each directory we should nuke.
-cd_autorm=$(mktemp -u .cd-autorm-XXXXXXXXXXXXXXXX)
+cd_autorm=$(basename $(mktemp -u "$HOME/.cd-autorm-XXXXXXXXXXXXXXXX"))
 
 function cd_missing_fn {
   local target=$1
