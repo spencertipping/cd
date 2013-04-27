@@ -5,12 +5,24 @@
 # Keep a special file key in each directory we should nuke.
 cd_autorm=$(basename $(mktemp -u "$HOME/.cd-autorm-XXXXXXXXXXXXXXXX"))
 
+cd_on '^!$' cd_make_permanent
+
+function cd_make_permanent {
+  if [[ -e "$cd_autorm" ]]; then
+    echo "cd: $PWD is no longer ephemeral"
+    rm -f "$cd_autorm"
+  else
+    echo "cd: $PWD is already permanent"
+  fi
+}
+
 function cd_missing_fn {
   local target=$1
   mkdir -p "$target"
   touch "$target/$cd_autorm"
 
   echo "cd: created ephemeral directory $target"
+  echo "cd: run 'cd !' or create contents to make it permanent"
   cd_goto "$target"
 }
 
@@ -22,6 +34,10 @@ function cd_missing_unfn {
   local to=$3
   if [[ -e "$from/$cd_autorm" ]]; then
     rm "$from/$cd_autorm"
-    rmdir "$from" && echo "cd: removed ephemeral directory $from"
+    if rmdir "$from" >& /dev/null; then
+      echo "cd: removed empty ephemeral directory $from"
+    else
+      echo "cd: $from is nonempty; converted to permanent"
+    fi
   fi
 }

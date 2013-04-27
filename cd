@@ -80,6 +80,7 @@ function cd_goto {
   local last_index=$(cd_index_for "$PWD")
 
   cd_original_cd "$1" || return $?
+  export OLDPWD=$last
   local this=$PWD
 
   if [[ $last_index != -1 ]]; then
