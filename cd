@@ -12,7 +12,7 @@ declare -a cd_index_history
 mkdir -p ~/.cd
 
 # This will trigger any auto-unmounting that needs to happen.
-trap "cd $HOME" EXIT TERM QUIT
+trap "cd '$HOME'" EXIT TERM QUIT
 
 function cd_on {
   # Usage: cd_on pattern fn [unfn]. This is how you add new handlers for cd.
@@ -149,11 +149,11 @@ function cd_mount {
 
   local target=$1
   local markername=${target//\//-}
-  local dirname=~/.cd/mountpoints/$markername
+  local dirname=~/.cd/mountpoints/"$markername"
 
   if [[ ! -e "$dirname" ]]; then
     mkdir -p "$dirname"
-    $mount_command "$target" "$dirname"
+    $mount_command "$target" "$dirname" || return 1
   fi
   cd_goto "$dirname"
 }

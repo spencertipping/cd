@@ -15,7 +15,20 @@ function cd_yagfs_wrapper {
   # but yagfs isn't that clever. If we don't sleep, then bash will complete the
   # cd into the not-yet-mounted directory and you'll have to 'cd .' in order to
   # see the mounted contents.
-  (yagfs "${target#git:}" "$mountpoint" & sleep 0.5)
+  (yagfs "${target#git:}" "$mountpoint" >& /dev/null || rmdir "$mountpoint" &)
+
+  local count=0
+  echo -n 'cd-git: awaiting git mount...'
+  until [[ -d "$mountpoint/objects" || $count -gt 10 ]]; do
+    sleep 0.25
+    echo -n .
+    if [[ ! -d "$mountpoint" ]]; then
+      echo
+      echo "cd-git: failed to mount $target"
+      return 1
+    fi
+  done
+  echo
 }
 
 function cd_yagfs_mount {
