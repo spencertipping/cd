@@ -9,7 +9,8 @@ declare -a cd_unfns             # functions to deactivate directories
 declare -a cd_history
 declare -a cd_index_history
 
-mkdir -p ~/.cd
+mkdir -p ~/.cd/mountpoints      # directories for FUSE, etc
+mkdir -p ~/.cd/parents          # see cd_mount for details
 
 # This will trigger any auto-unmounting that needs to happen.
 trap "cd '$HOME'" EXIT TERM QUIT
@@ -78,8 +79,26 @@ function cd_goto {
   # is that the resulting $PWD will trigger the correct cd_pattern.
   local last=$PWD
   local last_index=$(cd_index_for "$PWD")
+  local target=$1
 
-  cd_original_cd "$1" || return $?
+  # Some trickery to handle a strange case:
+  # $ cd /tmp                   # normal cd
+  # $ cd foo:/bar/bif           # sshfs mount
+  # $ cd ..                     # we should now be back in /tmp
+  if [[ "${PWD%/*}" == ~/.cd/mountpoints && "${target%%/*}" == .. ]]; then
+    local parentfile=~/.cd/parents/"$$-${PWD##*/}"
+    if cd_original_cd "$(<"$parentfile")"; then
+      rm "$parentfile"
+      target=${target#..}
+      cd_original_cd "${target#/}" || return $?
+    else
+      rm "$parentfile"
+      cd_original_cd "$target" || return $?
+    fi
+  else
+    cd_original_cd "$target" || return $?
+  fi
+
   export OLDPWD=$last
   local this=$PWD
 
@@ -151,6 +170,8 @@ function cd_mount {
   local markername=${target//\//-}
   local dirname=~/.cd/mountpoints/"$markername"
 
+  echo "$PWD" > ~/.cd/parents/"$$-$markername"          # see cd_up
+
   if [[ ! -e "$dirname" ]]; then
     mkdir -p "$dirname"
     $mount_command "$target" "$dirname" || return 1
@@ -195,6 +216,7 @@ function cd_list_mountpoints {
 }
 
 function cd_clean_mountpoints {
+  rm -f ~/.cd/parents/*
   for mountpoint in ~/.cd/mountpoints/*; do
     echo "cd: unmounting $mountpoint..."
     fusermount -u "$mountpoint" >& /dev/null
