@@ -13,7 +13,7 @@ mkdir -p ~/.cd/mountpoints      # directories for FUSE, etc
 mkdir -p ~/.cd/parents          # see cd_mount for details
 
 # This will trigger any auto-unmounting that needs to happen.
-trap "cd '$HOME'" EXIT TERM QUIT
+trap "CD_EXITING=yes cd '$HOME'" EXIT TERM QUIT
 
 function cd_on {
   # Usage: cd_on pattern fn [unfn]. This is how you add new handlers for cd.
@@ -193,8 +193,13 @@ function cd_umount {
 
   if [[ ($1 == --different && -d $pwd_mount) ||
         ($1 == --same      &&    $pwd_mount != $new_mount) ]]; then
-    $umount_command "$pwd_mount"
-    rmdir "$pwd_mount"
+    if $umount_command "$pwd_mount" >& /dev/null; then
+      rmdir "$pwd_mount"
+    else
+      echo "cd: ${pwd_mount#$HOME/.cd/mountpoints/} is still mounted" \
+           "(you should run cd --clean once it is no longer in use)"
+      [[ -z "$CD_EXITING" ]] || read -p "press ENTER to continue"
+    fi
   fi
 }
 
@@ -218,10 +223,16 @@ function cd_list_mountpoints {
 function cd_clean_mountpoints {
   rm -f ~/.cd/parents/*
   for mountpoint in ~/.cd/mountpoints/*; do
-    echo "cd: unmounting $mountpoint..."
-    fusermount -u "$mountpoint" >& /dev/null
-    umount        "$mountpoint" >& /dev/null
-    rmdir "$mountpoint"
+    if [[ -d "$mountpoint" ]]; then
+      echo -n "cd: unmounting ${mountpoint#$HOME/.cd/mountpoints/}... "
+      if fusermount -u "$mountpoint" >& /dev/null \
+         || umount     "$mountpoint" >& /dev/null; then
+        echo "done"
+        rmdir "$mountpoint"
+      else
+        echo "still in use; not unmounting"
+      fi
+    fi
   done
 }
 
