@@ -8,7 +8,7 @@ cd_on '^\*\*'     cd_traverse_descendant
 function cd_traverse_ancestor {
   local pattern="${1#..}[^/]*$"
   local firstpwd=$PWD
-  while [[ !($PWD =~ $pattern) && $PWD != / ]]; do
+  while [[ !("${PWD##*/}" =~ $pattern) && $PWD != / ]]; do
     builtin cd ..
   done
   local newpwd=$PWD
