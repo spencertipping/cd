@@ -194,8 +194,18 @@ function cd_list_mountpoints {
   ls ~/.cd/mountpoints
 }
 
+function cd_clean_mountpoints {
+  for mountpoint in ~/.cd/mountpoints/*; do
+    echo "cd: unmounting $mountpoint..."
+    fusermount -u "$mountpoint" >& /dev/null
+    umount        "$mountpoint" >& /dev/null
+    rmdir "$mountpoint"
+  done
+}
+
 cd_on '^--patterns$'       cd_list_patterns
 cd_on '^--history$'        cd_list_history
 cd_on '^--mount(point)?s$' cd_list_mountpoints
+cd_on '^--clean$'          cd_clean_mountpoints
 
 cd_push_history "$PWD"

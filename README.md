@@ -25,6 +25,11 @@ Fuse-mounted directories are unmounted automatically when you `cd` out of them.
     $ cd --history              # prints $PWD history, most recent first
     $ cd --mounts               # lists probably-active FUSE mount points
     $ cd --patterns             # all patterns that 'cd' is looking for
+    $ cd --clean                # attempts to unmount and remove all mounts
+
+The `--clean` option is good for cases where FUSE mountpoints are left in an
+inconsistent state; for instance, when you suspend a machine with an open SSHFS
+connection. It will unmount and remove all mountpoints that aren't in use.
 
 ## Setup
 
