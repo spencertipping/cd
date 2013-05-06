@@ -18,12 +18,12 @@ function cd_make_permanent {
 
 function cd_missing_fn {
   local target=$1
-  if ! mkdir -p "$target"; then
+  if ! mkdir -p -- "$target"; then
     echo "cd: cannot create ephemeral directory $target"
     return 1
   fi
 
-  touch "$target/$cd_autorm"
+  touch -- "$target/$cd_autorm"
   echo "cd: created ephemeral directory $target; cd ! to make it permanent"
   cd_goto "$target"
 }

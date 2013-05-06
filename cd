@@ -134,7 +134,7 @@ if ! declare -f cd_original_cd > /dev/null; then
   if cd_original_source=$(declare -f cd); then
     eval "cd_original_cd ${cd_original_source#cd }"
   else
-    function cd_original_cd { builtin cd "$@"; }
+    function cd_original_cd { builtin cd -- "$@"; }
   fi
 fi
 
@@ -239,9 +239,25 @@ function cd_clean_mountpoints {
   done
 }
 
+# usage
+function cd_help {
+  echo 'usage:'
+  echo '  cd path               normal "cd" behavior'
+  echo '  cd --mounts           list active mountpoints'
+  echo '  cd --patterns         list enabled patterns'
+  echo '  cd --history          show $PWD history'
+  echo '  cd --clean            unmounts stale mountpoints'
+  echo
+  echo 'depending on the extension you have loaded, "cd" may support special'
+  echo 'behavior; see https://github.com/spencertipping/cd for details'
+  echo
+}
+
 cd_on '^--patterns$'       cd_list_patterns
 cd_on '^--history$'        cd_list_history
 cd_on '^--mount(point)?s$' cd_list_mountpoints
 cd_on '^--clean$'          cd_clean_mountpoints
+
+cd_on '^-?-h(elp)?$' cd_help
 
 cd_push_history "$PWD"
