@@ -174,7 +174,10 @@ function cd_mount {
 
   if [[ ! -e "$dirname" ]]; then
     mkdir -p "$dirname"
-    $mount_command "$target" "$dirname" || return 1
+    if ! $mount_command "$target" "$dirname"; then
+      rmdir "$dirname"
+      return 1
+    fi
   fi
   cd_goto "$dirname"
 }
@@ -225,10 +228,10 @@ function cd_clean_mountpoints {
   for mountpoint in ~/.cd/mountpoints/*; do
     if [[ -d "$mountpoint" ]]; then
       echo -n "cd: unmounting ${mountpoint#$HOME/.cd/mountpoints/}... "
-      if fusermount -u "$mountpoint" >& /dev/null \
-         || umount     "$mountpoint" >& /dev/null; then
+      fusermount -u "$mountpoint" >& /dev/null
+      umount "$mountpoint" >& /dev/null
+      if rmdir "$mountpoint" >& /dev/null; then
         echo "done"
-        rmdir "$mountpoint"
       else
         echo "still in use; not unmounting"
       fi
