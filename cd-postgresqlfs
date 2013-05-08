@@ -1,0 +1,24 @@
+#!/bin/bash
+# Auto postgresqlfs mounting | Spencer Tipping
+# Licensed under the terms of the MIT source code license
+
+if which postgresqlfs > /dev/null; then
+  cd_on '^postgres$' cd_postgres_mount cd_postgres_umount
+fi
+
+function cd_postgres_wrapper {
+  local target=$1
+  local mountpoint=$2
+
+  # Postgresqlfs ignores the target; it mounts all databases under a single
+  # directory.
+  postgresqlfs "$mountpoint"
+}
+
+function cd_postgres_mount {
+  cd_mount cd_postgres_wrapper "$@"
+}
+
+function cd_postgres_umount {
+  cd_umount "fusermount -u" "$@"
+}
