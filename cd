@@ -87,12 +87,12 @@ function cd_goto {
   # $ cd ..                     # we should now be back in /tmp
   if [[ "${PWD%/*}" == ~/.cd/mountpoints && "${target%%/*}" == .. ]]; then
     local parentfile=~/.cd/parents/"$$-${PWD##*/}"
-    if cd_original_cd "$(<"$parentfile")"; then
-      rm "$parentfile"
+    if [[ -e "$parentfile" ]] && cd_original_cd "$(<"$parentfile")"; then
+      rm -f "$parentfile"
       target=${target#..}
       cd_original_cd "${target#/}" || return $?
     else
-      rm "$parentfile"
+      rm -f "$parentfile"
       cd_original_cd "$target" || return $?
     fi
   else
