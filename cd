@@ -240,7 +240,8 @@ function cd_clean_mountpoints {
       echo -n "cd: unmounting ${mountpoint#$HOME/.cd/mountpoints/}... "
       fusermount -u "$mountpoint" >& /dev/null
 
-      if grep "$(realpath "$mountpoint")" /etc/mtab >& /dev/null; then
+      if grep -v '/dev/fuse' /etc/mtab \
+         | grep "$(realpath "$mountpoint")" >& /dev/null; then
         cd_as_root umount "$mountpoint" >& /dev/null
       fi
 
