@@ -4,13 +4,6 @@
 
 cd_on '^/dev/(.*)' cd_dev_mount cd_dev_umount
 
-function cd_as_root {
-  if which sudo >& /dev/null; then
-    sudo "$@"
-  else
-    su root -c "$(printf '%q ' "$@")"
-  fi
-}
 
 function cd_dev_mount {
   cd_mount "cd_as_root mount" "$@"

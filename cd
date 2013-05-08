@@ -162,6 +162,14 @@ function cd {
 }
 
 # Mountpoint allocation
+function cd_as_root {
+  if which sudo >& /dev/null; then
+    sudo "$@"
+  else
+    su root -c "$(printf '%q ' "$@")"
+  fi
+}
+
 function cd_mount {
   local mount_command=$1
   shift
@@ -229,7 +237,11 @@ function cd_clean_mountpoints {
     if [[ -d "$mountpoint" ]]; then
       echo -n "cd: unmounting ${mountpoint#$HOME/.cd/mountpoints/}... "
       fusermount -u "$mountpoint" >& /dev/null
-      umount "$mountpoint" >& /dev/null
+
+      if grep "$(realpath "$mountpoint")" /etc/mtab >& /dev/null; then
+        cd_as_root umount "$mountpoint" >& /dev/null
+      fi
+
       if rmdir "$mountpoint" >& /dev/null; then
         echo "done"
       else
