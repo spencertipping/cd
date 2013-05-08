@@ -175,7 +175,9 @@ function cd_mount {
   shift
 
   local target=$1
-  local markername=${target//\//-}
+  local markername=$(realpath -s "$target")
+        markername=${markername#$HOME}
+        markername=${markername//\//-}
   local dirname=~/.cd/mountpoints/"$markername"
 
   echo "$PWD" > ~/.cd/parents/"$$-$markername"          # see cd_up
