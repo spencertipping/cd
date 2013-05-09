@@ -242,7 +242,7 @@ function cd_clean_mountpoints {
 
       if grep -v '\<fuse\>' /etc/mtab \
          | grep "$(realpath "$mountpoint")" >& /dev/null; then
-        cd_as_root umount "$mountpoint" >& /dev/null
+        cd_as_root umount "$mountpoint"
       fi
 
       if rmdir "$mountpoint" >& /dev/null; then
