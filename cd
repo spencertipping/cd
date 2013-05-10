@@ -170,6 +170,30 @@ function cd_as_root {
   fi
 }
 
+# realpath emulation for systems that don't have it
+if ! which realpath >& /dev/null; then
+  function realpath {
+    while (( $# > 1 )); do shift; done
+    local original_oldpwd=$PWD
+    local original_pwd=$PWD
+    local target=$1
+    local into=$target
+    local nonexistent=
+
+    until [[ -d "$into" ]]; do
+      nonexistent="$(basename "$into")/$nonexistent"
+      into=$(dirname "$into")
+    done
+
+    builtin cd -- "$(dirname "$into")"
+    local resulting_pwd=$PWD
+    builtin cd -- "$original_pwd"
+
+    export OLDPWD=$original_oldpwd
+    echo "$resulting_pwd/${nonexistent%/}"
+  }
+fi
+
 function cd_mount {
   local mount_command=$1
   shift
