@@ -6,6 +6,16 @@ if which encfs > /dev/null; then
   cd_on '^enc:' cd_encfs_mount cd_encfs_umount
 fi
 
+# An interesting thing with encfs: it doesn't by default hold an open
+# filehandle to the directory you've mounted. As a result, if you cd into one
+# virtual mountpoint, then cd into an enc:X directory inside that, the first
+# one will be unmounted since it appears to not be in use.
+#
+# The workaround is to run a subshell process that will hold a reference (via
+# CWD) to the outer filesystem for enough time to do the encFS mount. After
+# that we can probably live with opportunistic unmounting provided no open
+# files.
+
 function cd_encfs_wrapper {
   local target=${1#enc:}
   local mountpoint=$2
@@ -14,6 +24,7 @@ function cd_encfs_wrapper {
   # to run in daemon mode.
   pushd "$target" > /dev/null || return $?
   local real_target=$PWD
+  (sleep 60 &)
   popd > /dev/null
   encfs "$real_target" "$mountpoint"
 }

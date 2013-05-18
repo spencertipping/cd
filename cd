@@ -213,6 +213,7 @@ function cd_mount {
       return 1
     fi
   fi
+
   cd_goto "$dirname"
 }
 
@@ -260,16 +261,18 @@ function cd_list_mountpoints {
 function cd_clean_mountpoints {
   rm -f ~/.cd/parents/*
   for mountpoint in ~/.cd/mountpoints/*; do
-    if [[ -d "$mountpoint" ]]; then
+    # The ! -e check is for wonky FUSE mounts that have gotten into an
+    # inconsistent state.
+    if [[ ! -e "$mountpoint" || -d "$mountpoint" ]]; then
       echo -n "cd: unmounting ${mountpoint#$HOME/.cd/mountpoints/}... "
-      fusermount -u "$mountpoint" >& /dev/null
+      fusermount -u -- "$mountpoint" >& /dev/null
 
       if grep -v '\<fuse\>' /etc/mtab \
          | grep "$(realpath "$mountpoint")" >& /dev/null; then
-        cd_as_root umount "$mountpoint"
+        cd_as_root umount -- "$mountpoint"
       fi
 
-      if rmdir "$mountpoint" >& /dev/null; then
+      if rmdir -- "$mountpoint" >& /dev/null; then
         echo "done"
       else
         echo "still in use; not unmounting"
