@@ -2,8 +2,7 @@
 # Single-user /dev/X mounting | Spencer Tipping
 # Licensed under the terms of the MIT source code license
 
-cd_on '^/dev/(.*)' cd_dev_mount cd_dev_umount
-
+cd_on '([-/]dev[-/].*)' cd_dev_mount cd_dev_umount
 
 function cd_dev_mount {
   cd_mount "cd_as_root mount" "$@"
