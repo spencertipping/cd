@@ -20,6 +20,14 @@ real directories to special commands; so if you had a directory called `foo:`,
 
 Fuse-mounted directories are unmounted automatically when you `cd` out of them.
 
+`cd` also supports symlinks to virtual directories. For example:
+
+    $ ln -s machine-name:/foo/bar my-symlink
+    $ cd my-symlink             # same as cd machine-name:/foo/bar
+
+If you want `cd` to virtualize the destination of a symlink, the symlink must
+not point to a real directory.
+
 ## Interactive options
 
     $ cd --history              # prints $PWD history, most recent first
