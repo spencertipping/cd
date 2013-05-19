@@ -151,14 +151,23 @@ function cd {
     return $?
   fi
 
-  # Otherwise, identify the pattern and invoke the corresponding fn. This fn
-  # should invoke cd_goto to do the directory change, which will in turn invoke
-  # the proper unfns. We don't need to check the index because we have a
-  # catch-all pattern that already invokes cd_missing_fn and cd_missing_unfn.
-  local index=$(cd_index_for "$target")
-  local fn=${cd_fns[$index]}
-  shift
-  ${fn:-:} "$target" "$@"
+  # Are we cd'ing into a symlink? If so, expand potential targets in the link
+  # target. (If the symlink pointed to an existing directory, then we would
+  # have taken it with the -d test above ... so this won't intercept valid
+  # symlink targets.)
+  if [[ -L "$target" ]]; then
+    cd "$(readlink "$target")"
+  else
+    # Otherwise, identify the pattern and invoke the corresponding fn. This fn
+    # should invoke cd_goto to do the directory change, which will in turn
+    # invoke the proper unfns. We don't need to check the index because we have
+    # a catch-all pattern that already invokes cd_missing_fn and
+    # cd_missing_unfn.
+    local index=$(cd_index_for "$target")
+    local fn=${cd_fns[$index]}
+    shift
+    ${fn:-:} "$target" "$@"
+  fi
 }
 
 # Mountpoint allocation
