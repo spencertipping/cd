@@ -13,10 +13,32 @@ function cd_traverse_ancestor {
   done
   local newpwd=$PWD
   builtin cd "$firstpwd"    # go back so we can set $OLDPWD correctly
-  cd_goto "$newpwd"         # adds an entry to history, which we probably want
+
+  if [[ $newpwd != '/' ]]; then
+    cd_goto "$newpwd"       # adds an entry to history, which we probably want
+  else
+    echo "cd: no ancestor matches '${1#..}'"
+    return 1
+  fi
 }
 
 function cd_traverse_descendant {
-  local destination=./**/${1#\*\*}
-  cd_goto $destination
+  echo "cd: searching for descendants named '${1#\*\*}'..."
+
+  local name=${1#\*\*}
+  if [[ "${name%/}" != "$name" ]]; then
+    local dir_constraint='-type d'
+  fi
+
+  local destination=$(find . -name "$name" $dir_constraint -print -quit)
+  if [[ -n "$destination" ]]; then
+    if [[ -d "$destination" ]]; then
+      cd_goto "$destination"
+    else
+      cd_goto "${destination%/*}"
+    fi
+  else
+    echo "cd: no descendant matches '${1#\*\*}'"
+    return 1
+  fi
 }
