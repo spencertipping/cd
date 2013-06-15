@@ -2,8 +2,15 @@
 # Ancestor/descendant traversal | Spencer Tipping
 # Licensed under the terms of the MIT source code license
 
-cd_on '^\.\.[^/]' cd_traverse_ancestor
-cd_on '^\*\*'     cd_traverse_descendant
+cd_on '^\.\.[^/]'    cd_traverse_ancestor
+cd_on '^\.\.[0-9]+$' cd_traverse_ancestor_n
+cd_on '^\*\*'        cd_traverse_descendant
+
+function cd_traverse_ancestor_n {
+  local n=${1#..}
+  local p=$(yes ../ | head -n $n | tr -d '\n')
+  test -n $p && cd_goto $p
+}
 
 function cd_traverse_ancestor {
   local pattern="${1#..}[^/]*$"
