@@ -7,16 +7,18 @@ cd_on '^\*\*'     cd_traverse_descendant
 
 function cd_traverse_ancestor {
   local pattern="${1#..}[^/]*$"
-  local firstpwd=$PWD
-  while [[ !("${PWD##*/}" =~ $pattern) && $PWD != / ]]; do
-    builtin cd ..
-  done
-  local newpwd=$PWD
-  builtin cd "$firstpwd"    # go back so we can set $OLDPWD correctly
+  local target=$PWD
 
-  if [[ $newpwd != '/' ]]; then
-    cd_goto "$newpwd"       # adds an entry to history, which we probably want
-  else
+  while test "$PWD" != / ; do
+    builtin cd ..
+    if [[ "${PWD##*/}" =~ $pattern ]] ; then
+      target=$PWD
+      break
+    fi
+  done
+  cd_goto "$target"
+
+  if test $OLDPWD = / ; then
     echo "cd: no ancestor matches '${1#..}'"
     return 1
   fi
