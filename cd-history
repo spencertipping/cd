@@ -2,9 +2,9 @@
 # cd history extension | Spencer Tipping
 # Licensed under the terms of the MIT source code license
 
-cd_on '^\^.+$'  cd_history_back_pattern
-cd_on '^\^\d+$' cd_history_back_n
-cd_on '^\^+$'   cd_history_back
+cd_on '^\^.+$'     cd_history_back_pattern
+cd_on '^\^[0-9]+$' cd_history_back_n
+cd_on '^\^+$'      cd_history_back
 
 function cd_history_back {
   local n=$((1 + ${#1}))
