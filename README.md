@@ -8,6 +8,7 @@ real directories to special commands; so if you had a directory called `foo:`,
     $ cd machine-name:[path]    # automounts machine-name:path with sshfs
     $ cd /dev/sdb1              # create a mountpoint, then sudo-mount it
     $ cd **foo                  # cd's to the first 'foo' descendant dir
+    $ cd ..5                    # cd's up five directories
     $ cd ..foo                  # cd's up to the nearest 'foo'
     $ cd x.tar                  # mounts x.tar with archivemount
     $ cd hdfs://namenode:9000   # mounts namenode with hadoop-fuse-dfs
