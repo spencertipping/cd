@@ -4,6 +4,8 @@
 
 if which yagfs > /dev/null; then
   cd_on '^git:' cd_yagfs_mount cd_yagfs_umount
+else
+  echo 'cd-git: no yagfs binary found in $PATH'
 fi
 
 function cd_yagfs_wrapper {

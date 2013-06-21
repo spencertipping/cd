@@ -4,6 +4,8 @@
 
 if which postgresqlfs > /dev/null; then
   cd_on '^postgres$' cd_postgres_mount cd_postgres_umount
+else
+  echo 'cd-postgresqlfs: no postgresqlfs binary found in $PATH'
 fi
 
 function cd_postgres_wrapper {

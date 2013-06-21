@@ -5,6 +5,8 @@
 if which httpfs2 > /dev/null; then
   cd_on '^(https?://)?[^/]+\.(com|net|org|io|ly).*' \
     cd_http_mount cd_http_umount
+else
+  echo 'cd-http: no httpfs2 binary found in $PATH'
 fi
 
 function cd_http_mount {

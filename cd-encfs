@@ -4,6 +4,8 @@
 
 if which encfs > /dev/null; then
   cd_on '^enc:' cd_encfs_mount cd_encfs_umount
+else
+  echo 'cd-encfs: no encfs binary found in $PATH'
 fi
 
 # An interesting thing with encfs: it doesn't by default hold an open

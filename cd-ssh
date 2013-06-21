@@ -4,6 +4,8 @@
 
 if which sshfs > /dev/null; then
   cd_on '^([^:]+):.*' cd_sshfs_mount cd_sshfs_umount
+else
+  echo 'cd-ssh: no sshfs binary found in $PATH'
 fi
 
 function cd_sshfs_mount {

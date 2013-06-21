@@ -4,6 +4,8 @@
 
 if which hadoop-fuse-dfs > /dev/null; then
   cd_on 'h?dfs:[-/][-/][^:/]+:[0-9]+' cd_hdfs_mount cd_hdfs_umount
+else
+  echo 'cd-hdfs: no hadoop-fuse-dfs binary found in $PATH'
 fi
 
 function cd_hdfs_mount {
