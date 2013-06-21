@@ -268,8 +268,13 @@ function cd_list_mountpoints {
   ls ~/.cd/mountpoints
 }
 
+function cd_lsof_mountpoints {
+  lsof ~/.cd/mountpoints/*
+}
+
 function cd_clean_mountpoints {
   rm -f ~/.cd/parents/*
+  local still_waiting=0
   for mountpoint in ~/.cd/mountpoints/*; do
     # The ! -e check is for wonky FUSE mounts that have gotten into an
     # inconsistent state.
@@ -286,8 +291,17 @@ function cd_clean_mountpoints {
         echo "done"
       else
         echo "still in use; not unmounting"
+        let still_waiting=still_waiting+1
       fi
     fi
+  done
+
+  return $still_waiting
+}
+
+function cd_cleanall_mountpoints {
+  until cd_clean_mountpoints; do
+    sleep 1
   done
 }
 
@@ -298,7 +312,9 @@ function cd_help {
   echo '  cd --mounts           list active mountpoints'
   echo '  cd --patterns         list enabled patterns'
   echo '  cd --history          show $PWD history'
+  echo '  cd --lsof             show open files in mountpoints'
   echo '  cd --clean            unmounts stale mountpoints'
+  echo '  cd --cleanall         loops cd --clean until all unmounted'
   echo
   echo 'depending on the extension you have loaded, "cd" may support special'
   echo 'behavior; see https://github.com/spencertipping/cd for details'
@@ -308,7 +324,9 @@ function cd_help {
 cd_on '^--patterns$'       cd_list_patterns
 cd_on '^--history$'        cd_list_history
 cd_on '^--mount(point)?s$' cd_list_mountpoints
+cd_on '^--lsof$'           cd_lsof_mountpoints
 cd_on '^--clean$'          cd_clean_mountpoints
+cd_on '^--clean-?all$'     cd_cleanall_mountpoints
 
 cd_on '^-?-h(elp)?$' cd_help
 
