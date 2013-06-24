@@ -296,7 +296,7 @@ function cd_clean_mountpoints {
   done
 
   for parentfile in ~/.cd/parents/*; do
-    if [[ "$parentfile" =~ ^.*/\d+-(.*)$
+    if [[ "$parentfile" =~ ^.*/[0-9]+-(.*)$
        && ! -d ~/.cd/mountpoints/${BASH_REMATCH[1]} ]]; then
       rm -f -- "$parentfile"
     fi
