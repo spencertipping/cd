@@ -214,7 +214,7 @@ function cd_mount {
         markername=${markername//\//-}
   local dirname=~/.cd/mountpoints/"$markername"
 
-  echo "$PWD" > ~/.cd/parents/"$$-$markername"          # see cd_up
+  echo "$PWD" > ~/.cd/parents/"$$-$markername"          # see cd_goto
 
   if [[ ! -e "$dirname" ]]; then
     mkdir -p "$dirname"
@@ -273,7 +273,6 @@ function cd_lsof_mountpoints {
 }
 
 function cd_clean_mountpoints {
-  rm -f ~/.cd/parents/*
   local still_waiting=0
   for mountpoint in ~/.cd/mountpoints/*; do
     # The ! -e check is for wonky FUSE mounts that have gotten into an
@@ -293,6 +292,13 @@ function cd_clean_mountpoints {
         echo "still in use; not unmounting"
         let still_waiting=still_waiting+1
       fi
+    fi
+  done
+
+  for parentfile in ~/.cd/parents/*; do
+    if [[ "$parentfile" =~ ^.*/\d+-(.*)$
+       && ! -d ~/.cd/mountpoints/${BASH_REMATCH[1]} ]]; then
+      rm -f -- "$parentfile"
     fi
   done
 
