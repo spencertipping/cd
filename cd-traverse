@@ -32,22 +32,25 @@ function cd_traverse_ancestor {
 }
 
 function cd_traverse_descendant {
-  echo "cd: searching for descendants named '${1#\*\*}'..."
+  local pattern="${1#\*\*}"
+  local depth=1
+  local dirs dir
 
-  local name=${1#\*\*}
-  if [[ "${name%/}" != "$name" ]]; then
-    local dir_constraint='-type d'
-  fi
+  while : ; do
+    dirs="$(find -mindepth $depth -maxdepth $depth -type d 2>/dev/null)"
 
-  local destination=$(find . -name "$name" $dir_constraint -print -quit)
-  if [[ -n "$destination" ]]; then
-    if [[ -d "$destination" ]]; then
-      cd_goto "$destination"
-    else
-      cd_goto "${destination%/*}"
+    if test -z "$dirs" ; then
+      echo "cd: no descendant matches '${pattern}'"
+      return 1
     fi
-  else
-    echo "cd: no descendant matches '${1#\*\*}'"
-    return 1
-  fi
+
+    while read dir ; do
+      if [[ "$dir" =~ $pattern ]] ; then
+        cd_goto "$dir"
+        return
+      fi
+    done <<< "$dirs"
+
+    depth=$((depth + 1))
+  done
 }
