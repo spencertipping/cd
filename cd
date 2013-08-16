@@ -246,12 +246,23 @@ function cd_umount {
   local umount_command=$1
   shift
 
+  # For some reason, even BASH_REMATCH won't cause zsh to bind stuff the way
+  # bash does. So here we need to do real shell detection to smooth over the
+  # differences.
   if [[ $2 =~ ^($HOME/.cd/mountpoints/[^/]+) ]]; then
-    local pwd_mount=${BASH_REMATCH[$((cd_array_offset + 1))]}
+    if [[ -n $ZSH_VERSION ]]; then
+      local pwd_mount=${match[1]}
+    else
+      local pwd_mount=${BASH_REMATCH[1]}
+    fi
   fi
 
   if [[ $3 =~ ^($HOME/.cd/mountpoints/[^/]+) ]]; then
-    local new_mount=${BASH_REMATCH[$((cd_array_offset + 1))]}
+    if [[ -n $ZSH_VERSION ]]; then
+      local new_mount=${match[1]}
+    else
+      local new_mount=${BASH_REMATCH[1]}
+    fi
   fi
 
   if [[ ($1 == --different && -d $pwd_mount) ||
