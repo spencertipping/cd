@@ -17,7 +17,10 @@ function cd_yagfs_wrapper {
   # but yagfs isn't that clever. If we don't sleep, then bash will complete the
   # cd into the not-yet-mounted directory and you'll have to 'cd .' in order to
   # see the mounted contents.
-  (yagfs "${target#git:}" "$mountpoint" || rmdir "$mountpoint" &)
+  #
+  # Note: extra parens required by zsh, which will otherwise interpret only the
+  #       second command as a background job.
+  ((yagfs "${target#git:}" "$mountpoint" || rmdir "$mountpoint") &)
 
   local count=0
   echo -n 'cd-git: awaiting git mount...'
