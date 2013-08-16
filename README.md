@@ -33,10 +33,13 @@ not point to a real directory.
 ## Using with zsh
 
 `cd` works just fine with zsh, but you'll need to make sure of a few things.
-First, make sure `KSH_ARRAYS` is unset when you load the script; otherwise `cd`
-will be in bash-compatible mode and will break under zsh. Second, `cd` will set
-`BASH_REMATCH` and assumes that you'll leave it set (sorry). So if you unset
-it, `cd` will start having problems.
+First, make sure `KSH_ARRAYS` is **unset** when you load the script; otherwise
+`cd` will be in bash-compatible mode and will break under zsh. Second, `cd`
+will set `BASH_REMATCH` and assumes that you'll leave it set (sorry). So if you
+unset it, `cd` will start having problems.
+
+Also, `cd` will nuke any existing `zsh_exit` you have defined. If you care
+about this, ping me and I'll make it non-clobbering.
 
 ## Interactive options
 
