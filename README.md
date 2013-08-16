@@ -1,9 +1,10 @@
 # `cd`, but better
 
-A replacement for the default Bash `cd` command. It can mount FUSE filesystems
-on-demand, jump down multiple levels of directories, etc. `cd` always prefers
-real directories to special commands; so if you had a directory called `foo:`,
-`cd foo:` would just cd into `foo:`, not try to mount `foo:` with sshfs.
+A replacement for the default bash/zsh `cd` command. It can mount FUSE
+filesystems on-demand, jump down multiple levels of directories, etc. `cd`
+always prefers real directories to special commands; so if you had a directory
+called `foo:`, `cd foo:` would just cd into `foo:`, not try to mount `foo:`
+with sshfs.
 
     $ cd machine-name:[path]    # automounts machine-name:path with sshfs
     $ cd /dev/sdb1              # create a mountpoint, then sudo-mount it
@@ -28,6 +29,14 @@ Fuse-mounted directories are unmounted automatically when you `cd` out of them.
 
 If you want `cd` to virtualize the destination of a symlink, the symlink must
 not point to a real directory.
+
+## Using with zsh
+
+`cd` works just fine with zsh, but you'll need to make sure of a few things.
+First, make sure `KSH_ARRAYS` is unset when you load the script; otherwise `cd`
+will be in bash-compatible mode and will break under zsh. Second, `cd` will set
+`BASH_REMATCH` and assumes that you'll leave it set (sorry). So if you unset
+it, `cd` will start having problems.
 
 ## Interactive options
 

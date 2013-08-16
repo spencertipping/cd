@@ -12,6 +12,21 @@ declare -a cd_index_history
 mkdir -p ~/.cd/mountpoints      # directories for FUSE, etc
 mkdir -p ~/.cd/parents          # see cd_mount for details
 
+# Detect zsh vs bash
+declare -a cd_zero_canary
+cd_zero_canary=( 'a' )
+if [[ -z "${cd_zero_canary[0]}" ]]; then
+  declare cd_array_offset=1     # zsh arrays start at 1
+  set BASH_REMATCH
+
+  function zsh_exit {
+    CD_EXITING=yes cd "$HOME"
+  }
+else
+  declare cd_array_offset=0     # bash arrays start at 0
+fi
+unset cd_zero_canary            # extra vars cost performance in bash
+
 # This will trigger any auto-unmounting that needs to happen.
 trap "CD_EXITING=yes cd '$HOME'" EXIT TERM QUIT
 
@@ -33,9 +48,9 @@ function cd_on {
   # --same/--different option and reuse mountpoints when cd'ing within a
   # mounted tree.
 
-  cd_patterns[${#cd_patterns[@]}]=$1
-  cd_fns[${#cd_fns[@]}]=${2:-:}
-  cd_unfns[${#cd_unfns[@]}]=${3:-:}
+  cd_patterns+=( "$1" )
+  cd_fns+=( "${2:-:}" )
+  cd_unfns+=( "${3:-:}" )
   :
 }
 
@@ -52,8 +67,8 @@ cd_on '.*' cd_missing_fn cd_missing_unfn
 
 function cd_push_history {
   if [[ ${#cd_history[@]} == 0 || "$1" != "${cd_history[-1]}" ]]; then
-    cd_history[${#cd_history[@]}]=$1
-    cd_index_history[${#cd_index_history[@]}]=$(cd_index_for "$1")
+    cd_history+=( "$1" )
+    cd_index_history+=( "$(cd_index_for "$1")" )
 
     if [[ "$2" != '-n' ]]; then
       echo "$1" >> ~/.cd/history
@@ -65,7 +80,7 @@ function cd_push_history {
 function cd_index_for {
   local target=$1
   for (( i = ${#cd_patterns[@]} - 1; i >= 0; --i )); do
-    if [[ "$target" =~ ${cd_patterns[$i]} ]]; then
+    if [[ "$target" =~ ${cd_patterns[$((cd_array_offset + i))]} ]]; then
       echo $i
       return 0
     fi
@@ -104,7 +119,7 @@ function cd_goto {
 
   if [[ $last_index != -1 ]]; then
     local this_index=$(cd_index_for "$this")
-    local unfn=${cd_unfns[$last_index]}
+    local unfn=${cd_unfns[$((cd_array_offset + last_index))]}
 
     if ((last_index == this_index)); then
       # We still need to let the unfn know that a cd happened, since we may be
@@ -113,8 +128,8 @@ function cd_goto {
       # of directory.
       ${unfn:-:} --same "$last" "$this" || return $?
     else
-      # Just invoke the unfn, informing it that we are changing into a different
-      # type of directory.
+      # Just invoke the unfn, informing it that we are changing into a
+      # different type of directory.
       ${unfn:-:} --different "$last" || return $?
     fi
   fi
@@ -164,7 +179,7 @@ function cd {
     # a catch-all pattern that already invokes cd_missing_fn and
     # cd_missing_unfn.
     local index=$(cd_index_for "$target")
-    local fn=${cd_fns[$index]}
+    local fn=${cd_fns[$((cd_array_offset + index))]}
     shift
     ${fn:-:} "$target" "$@"
   fi
@@ -218,7 +233,7 @@ function cd_mount {
 
   if [[ ! -e "$dirname" ]]; then
     mkdir -p "$dirname"
-    if ! $mount_command "$target" "$dirname"; then
+    if ! eval $mount_command "$target" "$dirname"; then
       rmdir "$dirname"
       return 1
     fi
@@ -232,16 +247,16 @@ function cd_umount {
   shift
 
   if [[ $2 =~ ^($HOME/.cd/mountpoints/[^/]+) ]]; then
-    local pwd_mount=${BASH_REMATCH[1]}
+    local pwd_mount=${BASH_REMATCH[$((cd_array_offset + 1))]}
   fi
 
   if [[ $3 =~ ^($HOME/.cd/mountpoints/[^/]+) ]]; then
-    local new_mount=${BASH_REMATCH[1]}
+    local new_mount=${BASH_REMATCH[$((cd_array_offset + 1))]}
   fi
 
   if [[ ($1 == --different && -d $pwd_mount) ||
         ($1 == --same      &&    $pwd_mount != $new_mount) ]]; then
-    if $umount_command -- "$pwd_mount"; then
+    if eval $umount_command -- "$pwd_mount"; then
       rmdir -- "$pwd_mount"
     else
       echo "cd: ${pwd_mount#$HOME/.cd/mountpoints/} is still mounted" \
@@ -254,13 +269,15 @@ function cd_umount {
 # cd state inspection
 function cd_list_history {
   for ((i = 0; i < ${#cd_history[@]}; ++i)); do
-    echo "${cd_history[$i]}"
+    echo "${cd_history[$((cd_array_offset + i))]}"
   done
 }
 
 function cd_list_patterns {
   for ((i = 0; i < ${#cd_patterns[@]}; ++i)); do
-    echo "${cd_patterns[$i]} ${cd_fns[$i]} ${cd_unfns[$i]}"
+    echo ${cd_patterns[$((cd_array_offset + i))]} \
+         ${cd_fns[$((cd_array_offset + i))]} \
+         ${cd_unfns[$((cd_array_offset + i))]}
   done
 }
 
@@ -297,7 +314,8 @@ function cd_clean_mountpoints {
 
   for parentfile in ~/.cd/parents/*; do
     if [[ "$parentfile" =~ ^.*/[0-9]+-(.*)$
-       && ! -d ~/.cd/mountpoints/${BASH_REMATCH[1]} ]]; then
+       && ! -d ~/.cd/mountpoints/${BASH_REMATCH[$((cd_array_offset + 1))]} ]]
+    then
       rm -f -- "$parentfile"
     fi
   done
