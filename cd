@@ -303,6 +303,8 @@ function cd_lsof_mountpoints {
 function cd_clean_mountpoints {
   local still_waiting=0
   for mountpoint in ~/.cd/mountpoints/*; do
+    [[ -e $mountpoint ]] || break
+
     # The ! -e check is for wonky FUSE mounts that have gotten into an
     # inconsistent state.
     if [[ ! -e "$mountpoint" || -d "$mountpoint" ]]; then
