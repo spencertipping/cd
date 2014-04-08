@@ -19,6 +19,7 @@ with sshfs.
     $ cd ^foo                   # history: go back to last dir matching /foo/
     $ cd git:/path/to/repo      # mounts git commits as directories
     $ cd enc:/path/to/encrypted # mounts an encfs directory
+    $ cd loop:image.iso         # mounts a loopback image
 
 Fuse-mounted directories are unmounted automatically when you `cd` out of them.
 
@@ -65,6 +66,7 @@ To enable it (this can also be done from `.bashrc`):
     $ . cd-git                  # does nothing unless you have yagfs
     $ . cd-encfs                # does nothing unless you have encfs
     $ . cd-dev                  # enables automounting for /dev/ entries
+    $ . cd-dev                  # enables mounting for loopback files
 
 You can see the patterns that are handled by running `cd --patterns`. (This can
 be useful if you want to find out which ones are ignored due to unmet
