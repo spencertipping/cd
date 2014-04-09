@@ -66,7 +66,7 @@ To enable it (this can also be done from `.bashrc`):
     $ . cd-git                  # does nothing unless you have yagfs
     $ . cd-encfs                # does nothing unless you have encfs
     $ . cd-dev                  # enables automounting for /dev/ entries
-    $ . cd-dev                  # enables mounting for loopback files
+    $ . cd-loop                 # enables mounting for loopback files
 
 You can see the patterns that are handled by running `cd --patterns`. (This can
 be useful if you want to find out which ones are ignored due to unmet
