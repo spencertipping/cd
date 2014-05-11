@@ -2,10 +2,27 @@
 # Single-user /dev/X mounting | Spencer Tipping
 # Licensed under the terms of the MIT source code license
 
+# You can use syntax like /dev/sda1::foo to mount the "foo" subvolume, in cases
+# where this applies (e.g. btrfs).
+
 cd_on '([-/]dev[-/].*)' cd_dev_mount cd_dev_umount
 
 function cd_dev_mount {
-  cd_mount "cd_as_root mount" "$@"
+  if [[ "$1" =~ ::(.*)$ ]]; then
+    if [[ -n $ZSH_VERSION ]]; then
+      local opts="-o subvol=${match[1]}"
+      local device="${1%::*}"
+    else
+      local opts="-o subvol=${BASH_REMATCH[1]}"
+      local device="${1%::*}"
+    fi
+  else
+    local device="$1"
+    local opts=''
+  fi
+
+  shift
+  cd_mount "cd_as_root mount $opts" "$device" "$@"
 }
 
 function cd_dev_umount {

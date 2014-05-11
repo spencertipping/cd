@@ -233,6 +233,7 @@ function cd_mount {
 
   if [[ ! -e "$dirname" ]]; then
     mkdir -p "$dirname"
+    echo 1>&2 "cd: running $mount_command '$target'"
     if ! eval "$mount_command '$target' '$dirname'"; then
       rmdir "$dirname"
       return 1
@@ -267,6 +268,7 @@ function cd_umount {
 
   if [[ ($1 == --different && -d $pwd_mount) ||
         ($1 == --same      &&    $pwd_mount != $new_mount) ]]; then
+    echo 1>&2 "cd: running $umount_command -- '$pwd_mount'"
     if eval "$umount_command -- '$pwd_mount'"; then
       rmdir -- "$pwd_mount"
     else
@@ -286,7 +288,8 @@ function cd_list_history {
 
 function cd_list_patterns {
   for ((i = 0; i < ${#cd_patterns[@]}; ++i)); do
-    echo ${cd_patterns[$((cd_array_offset + i))]} \
+    echo $i: \
+         ${cd_patterns[$((cd_array_offset + i))]} \
          ${cd_fns[$((cd_array_offset + i))]} \
          ${cd_unfns[$((cd_array_offset + i))]}
   done
@@ -298,6 +301,13 @@ function cd_list_mountpoints {
 
 function cd_lsof_mountpoints {
   lsof ~/.cd/mountpoints/*
+}
+
+function cd_show_handler {
+  local index=$(cd_index_for "$2")
+  echo "$2: index=$index"
+  echo "$2: fn=${cd_fns[$((cd_array_offset + index))]}"
+  echo "$2: unfn=${cd_unfns[$((cd_array_offset + index))]}"
 }
 
 function cd_clean_mountpoints {
@@ -352,8 +362,9 @@ function cd_help {
   echo '  cd --lsof             show open files in mountpoints'
   echo '  cd --clean            unmounts stale mountpoints'
   echo '  cd --cleanall         loops cd --clean until all unmounted'
+  echo '  cd --which <path>     indicates which backend handles <path>'
   echo
-  echo 'depending on the extension you have loaded, "cd" may support special'
+  echo 'depending on the extensions you have loaded, "cd" may support special'
   echo 'behavior; see https://github.com/spencertipping/cd for details'
   echo
 }
@@ -364,6 +375,7 @@ cd_on '^--mount(point)?s$' cd_list_mountpoints
 cd_on '^--lsof$'           cd_lsof_mountpoints
 cd_on '^--clean$'          cd_clean_mountpoints
 cd_on '^--clean-?all$'     cd_cleanall_mountpoints
+cd_on '^--which$'          cd_show_handler
 
 cd_on '^-?-h(elp)?$' cd_help
 

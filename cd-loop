@@ -2,13 +2,13 @@
 # Single-user loopback mounting | Spencer Tipping
 # Licensed under the terms of the MIT source code license
 
-cd_on '^loop:' cd_dev_mount cd_dev_umount
+cd_on '^loop:' cd_loop_mount cd_loop_umount
 
-function cd_dev_mount {
+function cd_loop_mount {
   target="${1#loop:}"
   cd_mount "cd_as_root mount -o loop" "$target"
 }
 
-function cd_dev_umount {
+function cd_loop_umount {
   cd_umount "cd_as_root umount" "$@"
 }
