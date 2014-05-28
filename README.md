@@ -16,6 +16,7 @@ with sshfs.
     $ cd ^                      # history: go back one directory
     $ cd ^^                     # history: go back two directories
     $ cd ^10                    # history: go back ten directories
+    $ cd -10                    # history: go back ten directories
     $ cd ^foo                   # history: go back to last dir matching /foo/
     $ cd git:/path/to/repo      # mounts git commits as directories
     $ cd enc:/path/to/encrypted # mounts an encfs directory
@@ -48,6 +49,7 @@ about this, ping me and I'll make it non-clobbering.
     $ cd --mounts               # lists probably-active FUSE mount points
     $ cd --patterns             # all patterns that 'cd' is looking for
     $ cd --clean                # attempts to unmount and remove all mounts
+    $ cd --which enc:x          # indicates which delegate is used for enc:x
 
 The `--clean` option is good for cases where FUSE mountpoints are left in an
 inconsistent state; for instance, when you suspend a machine with an open SSHFS
@@ -59,7 +61,7 @@ To enable it (this can also be done from `.bashrc`):
 
     $ . cd                      # enables extensible cd
     $ . cd-traverse             # enables descendant/ancestor traversal
-    $ . cd-history              # ^, ^^, ^n, ^regexp
+    $ . cd-history              # ^, ^^, ^n, -n, ^regexp
     $ . cd-ssh                  # does nothing unless you have sshfs
     $ . cd-archive              # does nothing unless you have archivemount
     $ . cd-hdfs                 # does nothing unless you have hadoop-fuse-dfs
