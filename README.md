@@ -70,6 +70,16 @@ To enable it (this can also be done from `.bashrc`):
     $ . cd-dev                  # enables automounting for /dev/ entries
     $ . cd-loop                 # enables mounting for loopback files
 
+Alternatively:
+
+    $ CD_EXTENSIONS=(traverse history ssh archive hdfs git encfs dev loop)
+    $ . cd
+
+Alternatively:
+
+    $ CD_EXTENSIONS=all
+    $ . cd
+
 You can see the patterns that are handled by running `cd --patterns`. (This can
 be useful if you want to find out which ones are ignored due to unmet
 dependencies.) Anything that isn't a pattern is treated like a regular

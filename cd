@@ -2,6 +2,9 @@
 # Customizable cd | Spencer Tipping
 # Licensed under the terms of the MIT source code license
 
+declare cd_path=${BASH_SOURCE:-$_}
+cd_path=${cd_path%/cd}
+
 declare -a cd_patterns
 declare -a cd_fns               # functions to activate directories
 declare -a cd_unfns             # functions to deactivate directories
@@ -383,3 +386,15 @@ cd_on '^--which$'          cd_show_handler
 cd_on '^-?-h(elp)?$' cd_help
 
 cd_push_history "$PWD"
+
+# process any args we have for this script
+if [[ $CD_EXTENSIONS == 'all' ]]; then
+  for extension in ssh archive dev loop encfs git history missing-mkdir \
+                   hdfs http postgresqlfs traverse; do
+    . $cd_path/cd-$extension
+  done
+else
+  for extension in ${CD_EXTENSIONS[@]}; do
+    . $cd_path/cd-$extension
+  done
+fi
