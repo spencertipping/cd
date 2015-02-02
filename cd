@@ -388,7 +388,7 @@ cd_on '^-?-h(elp)?$' cd_help
 cd_push_history "$PWD"
 
 # process any args we have for this script
-if [[ $CD_EXTENSIONS == 'all' ]]; then
+if [[ $CD_EXTENSIONS = 'all' ]]; then
   for extension in ssh archive dev loop encfs git history missing-mkdir \
                    hdfs http postgresqlfs traverse; do
     . $cd_path/cd-$extension
