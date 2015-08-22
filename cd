@@ -197,37 +197,34 @@ function cd_as_root {
   fi
 }
 
-# realpath emulation for systems that don't have it
-if ! which realpath >& /dev/null; then
-  function realpath {
-    while (( $# > 1 )); do shift; done
-    local original_oldpwd=$OLDPWD
-    local original_pwd=$PWD
-    local target=$1
-    local into=$target
-    local nonexistent=
+function cd_realpath {
+  while (( $# > 1 )); do shift; done
+  local original_oldpwd=$OLDPWD
+  local original_pwd=$PWD
+  local target=$1
+  local into=$target
+  local nonexistent=
 
-    until [[ -d "$into" ]]; do
-      nonexistent="$(basename "$into")/$nonexistent"
-      into=$(dirname "$into")
-    done
+  until [[ -d "$into" ]]; do
+    nonexistent="$(basename "$into")/$nonexistent"
+    into=$(dirname "$into")
+  done
 
-    builtin cd -- "$into"
-    local resulting_pwd=$PWD
-    builtin cd -- "$original_pwd"
+  builtin cd -- "$into"
+  local resulting_pwd=$PWD
+  builtin cd -- "$original_pwd"
 
-    export OLDPWD=$original_oldpwd
-    local result="$resulting_pwd/${nonexistent%/}"
-    echo "${result%/}"
-  }
-fi
+  export OLDPWD=$original_oldpwd
+  local result="$resulting_pwd/${nonexistent%/}"
+  echo "${result%/}"
+}
 
 function cd_mount {
   local mount_command="$1"
   shift
 
   local target="$1"
-  local markername="$(realpath -s "$target")"
+  local markername="$(cd_realpath -s "$target")"
         markername="${markername#$HOME}"
         markername="${markername//\//-}"
   local dirname=~/.cd/mountpoints/"$markername"
@@ -328,7 +325,7 @@ function cd_clean_mountpoints {
       fusermount -u -- "$mountpoint" >& /dev/null
 
       if grep -v '\<fuse\>' /etc/mtab \
-         | grep "$(realpath "$mountpoint")" >& /dev/null; then
+         | grep "$(cd_realpath "$mountpoint")" >& /dev/null; then
         cd_as_root umount -- "$mountpoint"
       fi
 
