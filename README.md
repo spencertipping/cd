@@ -69,6 +69,7 @@ To enable it (this can also be done from `.bashrc`):
     $ . cd-encfs                # does nothing unless you have encfs
     $ . cd-dev                  # enables automounting for /dev/ entries
     $ . cd-loop                 # enables mounting for loopback files
+    $ . cd-missing-mkdir        # mkdir -p if you cd someplace nonexistent
 
 Alternatively:
 
@@ -92,9 +93,7 @@ any existing redefinitions. This script, on the other hand, preserves RVM's
 Some of `cd`'s extensions store state and/or create temporary mountpoints in
 `~/.cd`, which it automatically creates.
 
-## Experimental extensions
-
-### Create missing directories
+## `mkdir` functionality
 
     $ . cd-missing-mkdir
 
