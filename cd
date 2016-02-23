@@ -312,14 +312,12 @@ function cd_show_handler {
 
 function cd_clean_mountpoints {
   local still_waiting=0
+  local prefix=~/.cd/mountpoints
 
-  # Bail if no mountpoints; we do this separately because otherwise the *
-  # pattern will be interpreted as a literal *
-  (( $(ls -d ~/.cd/mountpoints/* 2>/dev/null | wc -l) )) || return 0
-
-  for mountpoint in ~/.cd/mountpoints/*; do
+  for mountpoint in $(ls ~/.cd/mountpoints); do
     # The ! -e check is for wonky FUSE mounts that have gotten into an
     # inconsistent state.
+    mountpoint="$prefix/$mountpoint"
     if [[ ! -e "$mountpoint" || -d "$mountpoint" ]]; then
       echo -n "cd: unmounting ${mountpoint#$HOME/.cd/mountpoints/}... "
       fusermount -u -- "$mountpoint" >& /dev/null
