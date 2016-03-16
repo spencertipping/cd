@@ -1,0 +1,22 @@
+#!/bin/bash
+# Auto NFS mounting | Spencer Tipping
+# Licensed under the terms of the MIT source code license
+
+if which mount.nfs > /dev/null; then
+  cd_on '^nfs:' cd_nfs_mount cd_nfs_umount
+else
+  echo 'cd-nfs: no mount.nfs binary found in $PATH'
+fi
+
+function cd_nfs_mount {
+  local target=${1#nfs:}
+  local mountpoint=$2
+
+  # TODO: don't hardcode the port, obviously; work it into the syntax somehow.
+  cd_mount "cd_as_root mount -t nfs -o proto=tcp,port=2049" \
+           "$target" "$mountpoint"
+}
+
+function cd_sshfs_umount {
+  cd_umount "cd_as_root umount" "$@"
+}

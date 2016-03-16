@@ -19,6 +19,7 @@ with sshfs.
     $ cd -10                    # history: go back ten directories
     $ cd ^foo                   # history: go back to last dir matching /foo/
     $ cd git:/path/to/repo      # mounts git commits as directories
+    $ cd nfs:machine:/woot      # mounts NFS directories
     $ cd enc:/path/to/encrypted # mounts an encfs directory
     $ cd loop:image.iso         # mounts a loopback image
 
@@ -66,6 +67,7 @@ To enable it (this can also be done from `.bashrc`):
     $ . cd-archive              # does nothing unless you have archivemount
     $ . cd-hdfs                 # does nothing unless you have hadoop-fuse-dfs
     $ . cd-git                  # does nothing unless you have yagfs
+    $ . cd-nfs                  # does nothing unless you have mount.nfs
     $ . cd-encfs                # does nothing unless you have encfs
     $ . cd-dev                  # enables automounting for /dev/ entries
     $ . cd-loop                 # enables mounting for loopback files
