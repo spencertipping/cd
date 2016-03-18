@@ -17,6 +17,6 @@ function cd_nfs_mount {
            "$target" "$mountpoint"
 }
 
-function cd_sshfs_umount {
+function cd_nfs_umount {
   cd_umount "cd_as_root umount" "$@"
 }
