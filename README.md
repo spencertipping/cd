@@ -22,8 +22,10 @@ with sshfs.
     $ cd nfs:machine:/woot      # mounts NFS directories
     $ cd enc:/path/to/encrypted # mounts an encfs directory
     $ cd loop:image.iso         # mounts a loopback image
+    $ cd au:/usr:/var           # AUFS union mount
 
-Fuse-mounted directories are unmounted automatically when you `cd` out of them.
+Fuse and root-mounted directories are unmounted automatically when you `cd` out
+of them.
 
 `cd` also supports symlinks to virtual directories. For example:
 

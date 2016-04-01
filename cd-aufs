@@ -1,0 +1,13 @@
+#!/bin/bash
+# AUFS mounts | Spencer Tipping
+# Licensed under the terms of the MIT source code license
+
+cd_on '(^|-)u:' cd_aufs_mount cd_aufs_umount
+
+function cd_aufs_mount {
+  cd_mount "cd_as_root mount -t aufs -o br:${1#u:}" "$1"
+}
+
+function cd_aufs_umount {
+  cd_umount "cd_as_root umount" "$@"
+}
