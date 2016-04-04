@@ -2,7 +2,8 @@
 # Single-user loopback mounting | Spencer Tipping
 # Licensed under the terms of the MIT source code license
 
-cd_on '(^|-)loop:' cd_loop_mount cd_loop_umount
+cd_on '(^|-)loop:'    cd_loop_mount cd_loop_umount
+cd_on '\.squash(fs)?' cd_loop_mount cd_loop_umount
 
 function cd_loop_mount {
   target="${1#loop:}"
