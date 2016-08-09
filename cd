@@ -2,31 +2,30 @@
 # Customizable cd | Spencer Tipping
 # Licensed under the terms of the MIT source code license
 
-declare cd_path=${BASH_SOURCE:-$_}
+cd_path=${BASH_SOURCE:-$_}
 cd_path=${cd_path%/cd}
 
-declare -a cd_patterns
-declare -a cd_fns               # functions to activate directories
-declare -a cd_unfns             # functions to deactivate directories
+cd_patterns=()
+cd_fns=()                       # functions to activate directories
+cd_unfns=()                     # functions to deactivate directories
 
-declare -a cd_history
-declare -a cd_index_history
+cd_history=()
+cd_index_history=()
 
 mkdir -p ~/.cd/mountpoints      # directories for FUSE, etc
 mkdir -p ~/.cd/parents          # see cd_mount for details
 
 # Detect zsh vs bash
-declare -a cd_zero_canary
 cd_zero_canary=( 'a' )
 if [[ -z "${cd_zero_canary[0]}" ]]; then
-  declare cd_array_offset=1     # zsh arrays start at 1
+  cd_array_offset=1             # zsh arrays start at 1
   set BASH_REMATCH
 
   function zsh_exit {
     CD_EXITING=yes cd "$HOME"
   }
 else
-  declare cd_array_offset=0     # bash arrays start at 0
+  cd_array_offset=0             # bash arrays start at 0
 fi
 unset cd_zero_canary            # extra vars cost performance in bash
 
