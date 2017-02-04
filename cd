@@ -68,7 +68,8 @@ function cd_missing_unfn {
 cd_on '.*' cd_missing_fn cd_missing_unfn
 
 function cd_push_history {
-  if [[ ${#cd_history[@]} == 0 || "$1" != "${cd_history[-1]}" ]]; then
+  if [[ ${#cd_history[@]} == 0 || \
+        "$1" != "${cd_history[$((${#cd_history[@]} - 1))]}" ]]; then
     cd_history+=( "$1" )
     cd_index_history+=( "$(cd_index_for "$1")" )
 
