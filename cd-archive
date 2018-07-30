@@ -3,7 +3,7 @@
 # Licensed under the terms of the MIT source code license
 
 if which archivemount > /dev/null; then
-  cd_on '\.(tar(|\.(gz|bz2|Z|z|xz|lzma))|tgz|tbz2?|[rj]ar|zip|ZIP|cpio|od.)' \
+  cd_on '\.(tar(|\.(gz|bz2|Z|z|xz|lzma))|tgz|tbz2?|[rj]ar|zip|ZIP|cpio|od.|docx|xlsx|pptx)' \
     cd_archive_mount cd_archive_umount
 else
   echo 'cd-archive: no archivemount binary found in $PATH'
