@@ -384,7 +384,7 @@ cd_push_history "$PWD"
 
 # process any args we have for this script
 if [[ $CD_EXTENSIONS = 'all' ]]; then
-  for extension in ssh aufs archive dev loop encfs git nfs history \
+  for extension in ssh aufs archive dev loop encfs nfs history \
                    missing-mkdir hdfs http postgresqlfs traverse; do
     . $cd_path/cd-$extension
   done
