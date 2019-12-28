@@ -29,7 +29,7 @@ function cd_encfs_wrapper {
   local real_target=$PWD
   (sleep 60 &)
   popd > /dev/null
-  encfs "$real_target" "$mountpoint"
+  encfs -o allow_root "$real_target" "$mountpoint"
 }
 
 function cd_encfs_mount {
@@ -53,7 +53,7 @@ function cd_rencfs_wrapper {
   local real_target=$PWD
   (sleep 60 &)
   popd > /dev/null
-  encfs --reverse "$real_target" "$mountpoint"
+  encfs --reverse -o allow_root "$real_target" "$mountpoint"
 }
 
 function cd_rencfs_mount {
