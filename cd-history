@@ -33,7 +33,7 @@ function cd_history_back_pattern {
 if [[ -e ~/.cd/history ]]; then
   cd_old_ifs=$IFS
   IFS=$'\n'
-  for line in $(tail -n100 ~/.cd/history | uniq); do
+  for line in $(tail -n10 ~/.cd/history | uniq); do
     # -n is required so that we don't append these history entries to
     # ~/.cd/history.
     cd_push_history "$line" -n
