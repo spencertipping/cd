@@ -269,9 +269,8 @@ function cd_umount {
   if [[ ($1 == --different && -d $pwd_mount) ||
         ($1 == --same      &&    $pwd_mount != $new_mount) ]]; then
     echo 1>&2 "cd: running $umount_command -- '$pwd_mount'"
-    if eval "$umount_command -- '$pwd_mount'"; then
-      rmdir -- "$pwd_mount"
-    else
+    eval "$umount_command -- '$pwd_mount'"
+    if ! rmdir -- "$pwd_mount"; then
       echo "cd: ${pwd_mount#$HOME/.cd/mountpoints/} is still mounted" \
            "(you should run cd --clean once it is no longer in use)"
       [[ -z "$CD_EXITING" ]] || read -p "press ENTER to continue"
