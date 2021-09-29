@@ -23,6 +23,7 @@ $ cd nfs:machine:/woot      # mounts NFS directories
 $ cd enc:/path/to/encrypted # mounts an encfs directory
 $ cd loop:image.iso         # mounts a loopback image
 $ cd au:/usr:/var           # AUFS union mount
+$ cd s3://bucket            # s3fs (note that subpaths don't work yet)
 
 # deprecated commands:
 $ cd git:/path/to/repo      # mounts git commits as directories (requires YaGFS)
@@ -90,6 +91,7 @@ $ . cd                      # enables extensible cd
 $ . cd-traverse             # enables descendant/ancestor traversal
 $ . cd-history              # ^, ^^, ^n, -n, ^regexp
 $ . cd-ssh                  # does nothing unless you have sshfs
+$ . cd-s3fs                 # does nothing unless you have s3fs
 $ . cd-archive              # does nothing unless you have archivemount
 $ . cd-hdfs                 # does nothing unless you have hadoop-fuse-dfs
 $ . cd-nfs                  # does nothing unless you have mount.nfs

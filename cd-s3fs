@@ -1,0 +1,18 @@
+#!/bin/bash
+# Auto s3fs mounting | Spencer Tipping
+# Licensed under the terms of the MIT source code license
+
+if which s3fs > /dev/null; then
+  cd_on '^s3://([^/]+)' cd_s3fs_mount cd_s3fs_umount
+else
+  echo 'cd-s3fs: no s3fs binary found in $PATH'
+fi
+
+function cd_s3fs_mount {
+  local bucket="${1#s3://}"
+  cd_mount "s3fs -o allow_root" "$bucket:/"
+}
+
+function cd_s3fs_umount {
+  cd_umount "fusermount -u" "$@"
+}
