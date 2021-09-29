@@ -80,7 +80,7 @@ $ . cd
 Alternatively:
 
 ```sh
-$ CD_EXTENSIONS=(traverse history ssh archive hdfs encfs dev loop)
+$ CD_EXTENSIONS=(traverse history ssh s3fs archive hdfs encfs dev loop)
 $ . cd
 ```
 
