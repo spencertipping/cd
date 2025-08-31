@@ -6,27 +6,28 @@ called `foo:`, `cd foo:` would just cd into `foo:`, not try to mount `foo:`
 with sshfs.
 
 ```sh
-$ cd machine-name:[path]    # automounts machine-name:path with sshfs
-$ cd /dev/sdb1              # create a mountpoint, then sudo-mount it
-$ cd **x                    # cd's to the first descendant dir matching /x/
-$ cd ..5                    # cd's up five directories
-$ cd ..foo                  # cd's up to the nearest dir matching /foo/
-$ cd x.tar                  # mounts x.tar with archivemount
-$ cd y.zip                  # mounts y.zip with archivemount
-$ cd hdfs://namenode:9000   # mounts namenode with hadoop-fuse-dfs
-$ cd ^                      # history: go back one directory
-$ cd ^^                     # history: go back two directories
-$ cd ^10                    # history: go back ten directories
-$ cd -10                    # history: go back ten directories
-$ cd ^foo                   # history: go back to last dir matching /foo/
-$ cd nfs:machine:/woot      # mounts NFS directories
-$ cd enc:/path/to/encrypted # mounts an encfs directory
-$ cd loop:image.iso         # mounts a loopback image
-$ cd au:/usr:/var           # AUFS union mount
-$ cd s3://bucket            # s3fs (note that subpaths don't work yet)
+$ cd machine-name:[path]     # automounts machine-name:path with sshfs
+$ cd /dev/sdb1               # create a mountpoint, then sudo-mount it
+$ cd **x                     # cd's to the first descendant dir matching /x/
+$ cd ..5                     # cd's up five directories
+$ cd ..foo                   # cd's up to the nearest dir matching /foo/
+$ cd x.tar                   # mounts x.tar with archivemount
+$ cd y.zip                   # mounts y.zip with archivemount
+$ cd hdfs://namenode:9000    # mounts namenode with hadoop-fuse-dfs
+$ cd ^                       # history: go back one directory
+$ cd ^^                      # history: go back two directories
+$ cd ^10                     # history: go back ten directories
+$ cd -10                     # history: go back ten directories
+$ cd ^foo                    # history: go back to last dir matching /foo/
+$ cd nfs:machine:/woot       # mounts NFS directories
+$ cd enc:/path/to/encrypted  # mounts an encfs directory
+$ cd genc:/path/to/encrypted # mounts a gocryptfs directory
+$ cd loop:image.iso          # mounts a loopback image
+$ cd au:/usr:/var            # AUFS union mount
+$ cd s3://bucket             # s3fs (note that subpaths don't work yet)
 
 # deprecated commands:
-$ cd git:/path/to/repo      # mounts git commits as directories (requires YaGFS)
+$ cd git:/path/to/repo       # mounts git commits as directories (requires YaGFS)
 ```
 
 `cd git:` is now deprecated in favor of [ni's git
@@ -96,6 +97,7 @@ $ . cd-archive              # does nothing unless you have archivemount
 $ . cd-hdfs                 # does nothing unless you have hadoop-fuse-dfs
 $ . cd-nfs                  # does nothing unless you have mount.nfs
 $ . cd-encfs                # does nothing unless you have encfs
+$ . cd-gocryptfs            # does nothing unless you have gocryptfs
 $ . cd-dev                  # enables automounting for /dev/ entries
 $ . cd-loop                 # enables mounting for loopback files
 $ . cd-missing-mkdir        # mkdir -p if you cd someplace nonexistent

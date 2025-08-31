@@ -1,0 +1,29 @@
+#!/bin/bash
+# Auto goCryptFS mounting | Spencer Tipping
+# Licensed under the terms of the MIT source code license
+
+if which gocryptfs > /dev/null; then
+  cd_on '^genc:' cd_gocryptfs_mount cd_gocryptfs_umount
+else
+  echo 'cd-gocryptfs: no gocryptfs binary found in $PATH'
+fi
+
+# Based on cd_encfs_wrapper
+function cd_gocryptfs_wrapper {
+  local target=${1#genc:}
+  local mountpoint=$2
+
+  pushd "$target" > /dev/null || return $?
+  local real_target=$PWD
+  (sleep 60 &)
+  popd > /dev/null
+  gocryptfs "$real_target" "$mountpoint"
+}
+
+function cd_gocryptfs_mount {
+  cd_mount cd_gocryptfs_wrapper "$@"
+}
+
+function cd_gocryptfs_umount {
+  cd_umount "fusermount -u" "$@"
+}
